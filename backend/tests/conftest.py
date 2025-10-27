@@ -4,8 +4,9 @@ import pytest
 
 from annotator import create_app
 from annotator import db as database
+from annotator.models.liscense_key import LicenseKey
 from annotator.models.user import User
-from tests.util import EMAIL, PASSWORD
+from tests.util import EMAIL, PASSWORD, LICENSE_KEY
 
 
 @pytest.fixture
@@ -18,6 +19,7 @@ def app():
 def db(app, client, request):
     database.drop_all()
     database.create_all()
+    database.session.add(LicenseKey(key=LICENSE_KEY))
     database.session.commit()
 
     def fin():

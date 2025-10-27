@@ -4,14 +4,15 @@ from flask import url_for
 
 EMAIL = "new_user@email.com"
 PASSWORD = "test1234"
+LICENSE_KEY = "AAAA-AAAA-AAAA-AAAA"
 BAD_REQUEST = "Input payload validation failed"
 WWW_AUTH_NO_TOKEN = 'Bearer realm="registered_users@mydomain.com"'
 
 
-def register_user(test_client, email=EMAIL, password=PASSWORD):
+def register_user(test_client, email=EMAIL, password=PASSWORD, key=LICENSE_KEY):
     return test_client.post(
         url_for("api.auth_register"),
-        data=f"email={email}&password={password}",
+        data=f"email={email}&password={password}&license_key={key}",
         content_type="application/x-www-form-urlencoded",
     )
 

@@ -6,12 +6,24 @@ from flask_restx import Model
 from flask_restx.fields import String, Boolean
 
 
-auth_reqparser = RequestParser(bundle_errors=True)
-auth_reqparser.add_argument(
+auth_login_parser = RequestParser(bundle_errors=True)
+auth_login_parser.add_argument(
     name="email", type=email(), location="form", required=True, nullable=False
 )
-auth_reqparser.add_argument(
+auth_login_parser.add_argument(
     name="password", type=str, location="form", required=True, nullable=False
+)
+
+
+auth_register_parser = RequestParser(bundle_errors=True)
+auth_register_parser.add_argument(
+    name="email", type=email(), location="form", required=True, nullable=False
+)
+auth_register_parser.add_argument(
+    name="password", type=str, location="form", required=True, nullable=False
+)
+auth_register_parser.add_argument(
+    name="license_key", type=str, location="form", required=True, nullable=False
 )
 
 

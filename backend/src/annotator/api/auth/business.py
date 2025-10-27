@@ -6,18 +6,23 @@ from flask import current_app, jsonify
 from flask_restx import abort
 
 from annotator import db
-from annotator.api.auth.decorators import token_required
+from annotator.api.auth.decorators import token_required, admin_token_required
 from annotator.models.token_blacklist import BlacklistedToken
 from annotator.models.user import User
+from annotator.models.liscense_key import LicenseKey
 from annotator.util.datetime_util import (
     remaining_fromtimestamp,
     format_timespan_digits,
 )
 
 
-def process_registration_request(email, password):
+def process_registration_request(email, password, license_key):
     if User.find_by_email(email):
         abort(HTTPStatus.CONFLICT, f"{email} is already registered", status="fail")
+    key = LicenseKey.find_by_license_key(license_key)
+    if not key or key.used:
+        abort(HTTPStatus.UNAUTHORIZED, "License key is invalid or used", status="fail")
+    setattr(key, "used", True)
     new_user = User(email=email, password=password)
     db.session.add(new_user)
     db.session.commit()
@@ -59,6 +64,18 @@ def process_logout_request():
     db.session.commit()
     response_dict = dict(status="success", message="successfully logged out")
     return response_dict, HTTPStatus.OK
+
+
+@admin_token_required
+def add_license_key():
+    keystring = LicenseKey.generate_license_key()
+    license_key = LicenseKey(keystring)
+    db.session.add(license_key)
+    db.session.commit()
+    response_dict = dict(
+        status="success", message="successfully generated key", key=keystring
+    )
+    return response_dict, HTTPStatus.CREATED
 
 
 def _create_auth_successful_response(token, status_code, message):

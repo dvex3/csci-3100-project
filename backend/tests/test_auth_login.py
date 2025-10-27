@@ -21,8 +21,8 @@ def test_login(client, db):
     assert result.success
     token_payload = result.value
     assert not token_payload["admin"]
-    user = User.find_by_public_id(token_payload["public_id"])
-    assert user and user.email == EMAIL
+    test_user = User.find_by_public_id(token_payload["public_id"])
+    assert test_user and test_user.email == EMAIL
 
 
 def test_login_email_does_not_exist(client, db):

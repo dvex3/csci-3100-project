@@ -22,8 +22,8 @@ def test_auth_register(client, db):
     assert result.success
     user_dict = result.value
     assert not user_dict["admin"]
-    user = User.find_by_public_id(user_dict["public_id"])
-    assert user and user.email == EMAIL
+    test_user = User.find_by_public_id(user_dict["public_id"])
+    assert test_user and test_user.email == EMAIL
 
 
 def test_auth_register_email_already_registered(client, db):
