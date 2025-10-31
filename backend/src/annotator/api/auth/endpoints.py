@@ -4,7 +4,12 @@ from http import HTTPStatus
 
 from flask_restx import Namespace, Resource
 
-from annotator.api.auth.dto import auth_login_parser, auth_register_parser, user_model
+from annotator.api.auth.dto import (
+    auth_login_parser,
+    auth_register_parser,
+    user_model,
+    auth_model,
+)
 from annotator.api.auth.business import (
     process_registration_request,
     process_login_request,
@@ -15,6 +20,7 @@ from annotator.api.auth.business import (
 
 auth_ns = Namespace(name="auth", validate=True)
 auth_ns.models[user_model.name] = user_model
+auth_ns.models[auth_model.name] = auth_model
 
 
 @auth_ns.route("/register", endpoint="auth_register")
@@ -22,6 +28,7 @@ class RegisterUser(Resource):
     """Handles HTTP requests to URL: /api/v1/auth/register."""
 
     @auth_ns.expect(auth_register_parser)
+    @auth_ns.marshal_with(auth_model)
     @auth_ns.response(int(HTTPStatus.CREATED), "New user was successfully created.")
     @auth_ns.response(int(HTTPStatus.CONFLICT), "Email address is already registered.")
     @auth_ns.response(int(HTTPStatus.UNAUTHORIZED), "License key is invalid or used")
@@ -41,6 +48,7 @@ class LoginUser(Resource):
     """Handles HTTP requests to URL: /api/v1/auth/login."""
 
     @auth_ns.expect(auth_login_parser)
+    @auth_ns.marshal_with(auth_model)
     @auth_ns.response(int(HTTPStatus.OK), "Login succeeded.")
     @auth_ns.response(int(HTTPStatus.UNAUTHORIZED), "email or password does not match")
     @auth_ns.response(int(HTTPStatus.BAD_REQUEST), "Validation error.")
@@ -58,10 +66,10 @@ class GetUser(Resource):
     """Handles HTTP requests to URL: /api/v1/auth/user."""
 
     @auth_ns.doc(security="Bearer")
+    @auth_ns.marshal_with(user_model)
     @auth_ns.response(int(HTTPStatus.OK), "Token is currently valid.", user_model)
     @auth_ns.response(int(HTTPStatus.BAD_REQUEST), "Validation error.")
     @auth_ns.response(int(HTTPStatus.UNAUTHORIZED), "Token is invalid or expired.")
-    @auth_ns.marshal_with(user_model)
     def get(self):
         """Validate access token and return user info."""
         return get_logged_in_user()

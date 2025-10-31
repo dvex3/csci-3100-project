@@ -27,10 +27,13 @@ def process_registration_request(email, password, license_key):
     db.session.add(new_user)
     db.session.commit()
     access_token = new_user.encode_access_token()
-    return _create_auth_successful_response(
-        token=access_token,
-        status_code=HTTPStatus.CREATED,
-        message="successfully registered",
+    return (
+        _create_auth_successful_response(
+            token=access_token,
+            status_code=HTTPStatus.CREATED,
+            message="successfully registered",
+        ),
+        HTTPStatus.CREATED,
     )
 
 
@@ -79,16 +82,13 @@ def add_license_key():
 
 
 def _create_auth_successful_response(token, status_code, message):
-    response = jsonify(
+    response = dict(
         status="success",
         message=message,
         access_token=token,
         token_type="bearer",
         expires_in=_get_token_expire_time(),
     )
-    response.status_code = status_code
-    response.headers["Cache-Control"] = "no-store"
-    response.headers["Pragma"] = "no-cache"
     return response
 
 

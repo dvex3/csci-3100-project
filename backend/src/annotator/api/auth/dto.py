@@ -3,7 +3,7 @@
 from flask_restx.inputs import email
 from flask_restx.reqparse import RequestParser
 from flask_restx import Model
-from flask_restx.fields import String, Boolean
+from flask_restx.fields import String, Boolean, Integer
 
 
 auth_login_parser = RequestParser(bundle_errors=True)
@@ -28,12 +28,24 @@ auth_register_parser.add_argument(
 
 
 user_model = Model(
-    "User",
+    "UserResponse",
     {
         "email": String,
         "public_id": String,
         "admin": Boolean,
         "registered_on": String(attribute="registered_on_str"),
         "token_expires_in": String,
+    },
+)
+
+
+auth_model = Model(
+    "AuthResponse",
+    {
+        "status": String,
+        "message": String,
+        "access_token": String,
+        "token_type": String,
+        "expires_in": Integer,
     },
 )
