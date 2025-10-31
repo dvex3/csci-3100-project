@@ -1,0 +1,11 @@
+.gitignore
+.npmignore
+api.ts
+base.ts
+common.ts
+configuration.ts
+docs/AuthApi.md
+docs/AuthResponse.md
+docs/UserResponse.md
+git_push.sh
+index.ts
