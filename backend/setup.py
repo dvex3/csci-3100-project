@@ -19,6 +19,7 @@ INSTALL_REQUIRES = [
     "urllib3",
     "werkzeug",
     "sqlalchemy",
+    "click",
 ]
 EXTRAS_REQUIRE = {
     "dev": [

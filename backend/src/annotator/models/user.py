@@ -24,7 +24,7 @@ class User(db.Model):
     __tablename__ = "site_user"
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    email = db.Column(db.String(255), unique=True, nullable=False)
+    email = db.Column(db.String(255), nullable=False)
     password_hash = db.Column(db.String(100), nullable=False)
     registered_on = db.Column(db.DateTime, default=utc_now)
     admin = db.Column(db.Boolean, default=False)

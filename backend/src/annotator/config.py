@@ -14,6 +14,7 @@ class Config:
     """Base configuration."""
 
     SECRET_KEY = os.getenv("SECRET_KEY", "open sesame")
+    UPLOAD_FOLDER = os.getenv("UPLOAD_FOLDER", os.path.join(HERE, "uploads"))
     BCRYPT_LOG_ROUNDS = 4
     TOKEN_EXPIRE_HOURS = 0
     TOKEN_EXPIRE_MINUTES = 0
@@ -54,4 +55,4 @@ ENV_CONFIG_DICT = dict(
 
 def get_config(config_name):
     """Retrieve environment configuration settings."""
-    return ENV_CONFIG_DICT.get(config_name, ProductionConfig)
+    return ENV_CONFIG_DICT.get(config_name, DevelopmentConfig)

@@ -2,7 +2,7 @@
 
 from http import HTTPStatus
 
-from flask import current_app, jsonify
+from flask import current_app
 from flask_restx import abort
 
 from annotator import db

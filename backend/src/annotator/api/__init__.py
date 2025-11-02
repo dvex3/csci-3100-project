@@ -4,6 +4,7 @@ from flask import Blueprint
 from flask_restx import Api
 
 from annotator.api.auth.endpoints import auth_ns
+from annotator.api.file.endpoints import file_ns
 
 api_bp = Blueprint("api", __name__, url_prefix="/api/v1")
 authorizations = {"Bearer": {"type": "apiKey", "in": "header", "name": "Authorization"}}
@@ -18,3 +19,4 @@ api = Api(
 )
 
 api.add_namespace(auth_ns)
+api.add_namespace(file_ns)
