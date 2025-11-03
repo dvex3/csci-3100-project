@@ -1,9 +1,11 @@
 """Business logic for /file API endpoints."""
 
 import os
+from http import HTTPStatus
 from uuid import uuid4
 
 from flask import current_app
+from flask_restx import abort
 from werkzeug.datastructures import FileStorage
 
 import annotator
@@ -40,3 +42,49 @@ def process_file_upload(name: str, file: FileStorage):
         file_name=file_name,
         owner_id=owner_id,
     )
+
+
+@token_required
+def get_file_info():
+    user_id = get_file_info.public_id
+    files = File.find_by_user_id(user_id)
+    output = []
+    for file in files:
+        output.append(file.as_dict())
+    return dict(
+        info=output,
+    )
+
+
+@token_required
+def get_file_content(uuid):
+    owner_id = get_file_content.public_id
+    file = File.find_by_uuid(uuid)
+    if not file:
+        abort(HTTPStatus.NOT_FOUND, "File not found", status="fail")
+    if file.owner_id != owner_id:
+        abort(
+            HTTPStatus.UNAUTHORIZED, "File does not belong to this user.", status="fail"
+        )
+    f = open(os.path.join(current_app.config["UPLOAD_FOLDER"], uuid))
+    content = f.read()
+    f.close()
+    return dict(
+        content=content,
+    )
+
+
+@token_required
+def delete_file(uuid):
+    owner_id = delete_file.public_id
+    file = File.find_by_uuid(uuid)
+    if not file:
+        abort(HTTPStatus.NOT_FOUND, "File not found", status="fail")
+    if file.owner_id != owner_id:
+        abort(
+            HTTPStatus.UNAUTHORIZED, "File does not belong to this user.", status="fail"
+        )
+    db.session.delete(file)
+    db.session.commit()
+    os.remove(os.path.join(current_app.config["UPLOAD_FOLDER"], uuid))
+    return dict(status="success", message=" File deleted successfully.")

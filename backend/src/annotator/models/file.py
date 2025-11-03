@@ -45,3 +45,8 @@ class File(db.Model):
     @classmethod
     def find_by_user_id(cls, user_id):
         return cls.query.filter_by(owner_id=user_id).all()
+
+    def as_dict(self):
+        output = {c.name: getattr(self, c.name) for c in self.__table__.columns}
+        output["created_at"] = localized_dt_string(self.created_at)
+        return output
