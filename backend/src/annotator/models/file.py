@@ -29,7 +29,7 @@ class File(db.Model):
     owner = db.relationship("User", backref="files")
 
     def __repr__(self):
-        return f"<Widget name={self.name}, file_path={self.file_path}>"
+        return f"<file_name={self.file_name}, item_name={self.item_name}>"
 
     @hybrid_property
     def created_at_str(self):

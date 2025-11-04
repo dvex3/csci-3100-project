@@ -28,7 +28,7 @@ file_ns.models[file_content_model.name] = file_content_model
 @file_ns.response(int(HTTPStatus.BAD_REQUEST), "Validation error.")
 @file_ns.response(int(HTTPStatus.INTERNAL_SERVER_ERROR), "Internal server error.")
 class UploadFile(Resource):
-    """Handles HTTP requests to URL: /api/v1/file"""
+    """Handles HTTP requests to URL: /api/v1/file/upload"""
 
     @file_ns.doc(security="Bearer")
     @file_ns.expect(file_upload_parser)

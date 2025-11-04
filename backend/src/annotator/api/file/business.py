@@ -25,19 +25,19 @@ def process_file_upload(name: str, file: FileStorage):
     file_name = file.filename
     uuid = str(uuid4())
     file.save(os.path.join(current_app.config["UPLOAD_FOLDER"], uuid))
-    new_file = File(
+    new_file_info = File(
         uuid=uuid,
         item_name=item_name,
         file_name=file_name,
         owner_id=owner_id,
         owner=owner,
     )
-    db.session.add(new_file)
+    db.session.add(new_file_info)
     db.session.commit()
-    file = File.find_by_uuid(uuid)
+    file_info = File.find_by_uuid(uuid)
     return dict(
         uuid=file.uuid,
-        created_at=localized_dt_string(file.created_at),
+        created_at=localized_dt_string(file_info.created_at),
         item_name=item_name,
         file_name=file_name,
         owner_id=owner_id,
