@@ -63,6 +63,69 @@ export interface AuthResponse {
 /**
  * 
  * @export
+ * @interface FileContentModel
+ */
+export interface FileContentModel {
+    /**
+     * 
+     * @type {string}
+     * @memberof FileContentModel
+     */
+    'content'?: string;
+}
+/**
+ * 
+ * @export
+ * @interface FileInfoListResponse
+ */
+export interface FileInfoListResponse {
+    /**
+     * 
+     * @type {Array<FileInfoResponse>}
+     * @memberof FileInfoListResponse
+     */
+    'info'?: Array<FileInfoResponse>;
+}
+/**
+ * 
+ * @export
+ * @interface FileInfoResponse
+ */
+export interface FileInfoResponse {
+    /**
+     * 
+     * @type {string}
+     * @memberof FileInfoResponse
+     */
+    'uuid'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof FileInfoResponse
+     */
+    'item_name'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof FileInfoResponse
+     */
+    'file_name'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof FileInfoResponse
+     */
+    'created_at'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof FileInfoResponse
+     */
+    'owner_id'?: string;
+}
+/**
+ * 
+ * @export
  * @interface UserResponse
  */
 export interface UserResponse {
@@ -509,6 +572,343 @@ export class AuthApi extends BaseAPI {
      */
     public postRegisterUser(email: string, password: string, licenseKey: string, options?: RawAxiosRequestConfig) {
         return AuthApiFp(this.configuration).postRegisterUser(email, password, licenseKey, options).then((request) => request(this.axios, this.basePath));
+    }
+}
+
+
+
+/**
+ * FileApi - axios parameter creator
+ * @export
+ */
+export const FileApiAxiosParamCreator = function (configuration?: Configuration) {
+    return {
+        /**
+         * 
+         * @summary Delete a file
+         * @param {string} uuid File UUID.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deleteFileAction: async (uuid: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'uuid' is not null or undefined
+            assertParamExists('deleteFileAction', 'uuid', uuid)
+            const localVarPath = `/file/{uuid}`
+                .replace(`{${"uuid"}}`, encodeURIComponent(String(uuid)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Bearer required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Retrieve content of a file
+         * @param {string} uuid File UUID.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getFileAction: async (uuid: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'uuid' is not null or undefined
+            assertParamExists('getFileAction', 'uuid', uuid)
+            const localVarPath = `/file/{uuid}`
+                .replace(`{${"uuid"}}`, encodeURIComponent(String(uuid)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Bearer required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Retrieve info of all files from a user
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getUploadFile: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/file/upload`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Bearer required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Upload a file to the server
+         * @param {string} name 
+         * @param {File} file 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        postUploadFile: async (name: string, file: File, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'name' is not null or undefined
+            assertParamExists('postUploadFile', 'name', name)
+            // verify required parameter 'file' is not null or undefined
+            assertParamExists('postUploadFile', 'file', file)
+            const localVarPath = `/file/upload`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+            const localVarFormParams = new ((configuration && configuration.formDataCtor) || FormData)();
+
+            // authentication Bearer required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+
+            if (name !== undefined) { 
+                localVarFormParams.append('name', name as any);
+            }
+    
+            if (file !== undefined) { 
+                localVarFormParams.append('file', file as any);
+            }
+    
+    
+            localVarHeaderParameter['Content-Type'] = 'multipart/form-data';
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = localVarFormParams;
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+    }
+};
+
+/**
+ * FileApi - functional programming interface
+ * @export
+ */
+export const FileApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = FileApiAxiosParamCreator(configuration)
+    return {
+        /**
+         * 
+         * @summary Delete a file
+         * @param {string} uuid File UUID.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async deleteFileAction(uuid: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.deleteFileAction(uuid, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['FileApi.deleteFileAction']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary Retrieve content of a file
+         * @param {string} uuid File UUID.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getFileAction(uuid: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FileContentModel>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getFileAction(uuid, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['FileApi.getFileAction']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary Retrieve info of all files from a user
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getUploadFile(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FileInfoListResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getUploadFile(options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['FileApi.getUploadFile']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary Upload a file to the server
+         * @param {string} name 
+         * @param {File} file 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async postUploadFile(name: string, file: File, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FileInfoResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.postUploadFile(name, file, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['FileApi.postUploadFile']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+    }
+};
+
+/**
+ * FileApi - factory interface
+ * @export
+ */
+export const FileApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = FileApiFp(configuration)
+    return {
+        /**
+         * 
+         * @summary Delete a file
+         * @param {string} uuid File UUID.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deleteFileAction(uuid: string, options?: RawAxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.deleteFileAction(uuid, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Retrieve content of a file
+         * @param {string} uuid File UUID.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getFileAction(uuid: string, options?: RawAxiosRequestConfig): AxiosPromise<FileContentModel> {
+            return localVarFp.getFileAction(uuid, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Retrieve info of all files from a user
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getUploadFile(options?: RawAxiosRequestConfig): AxiosPromise<FileInfoListResponse> {
+            return localVarFp.getUploadFile(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Upload a file to the server
+         * @param {string} name 
+         * @param {File} file 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        postUploadFile(name: string, file: File, options?: RawAxiosRequestConfig): AxiosPromise<FileInfoResponse> {
+            return localVarFp.postUploadFile(name, file, options).then((request) => request(axios, basePath));
+        },
+    };
+};
+
+/**
+ * FileApi - object-oriented interface
+ * @export
+ * @class FileApi
+ * @extends {BaseAPI}
+ */
+export class FileApi extends BaseAPI {
+    /**
+     * 
+     * @summary Delete a file
+     * @param {string} uuid File UUID.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof FileApi
+     */
+    public deleteFileAction(uuid: string, options?: RawAxiosRequestConfig) {
+        return FileApiFp(this.configuration).deleteFileAction(uuid, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Retrieve content of a file
+     * @param {string} uuid File UUID.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof FileApi
+     */
+    public getFileAction(uuid: string, options?: RawAxiosRequestConfig) {
+        return FileApiFp(this.configuration).getFileAction(uuid, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Retrieve info of all files from a user
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof FileApi
+     */
+    public getUploadFile(options?: RawAxiosRequestConfig) {
+        return FileApiFp(this.configuration).getUploadFile(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Upload a file to the server
+     * @param {string} name 
+     * @param {File} file 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof FileApi
+     */
+    public postUploadFile(name: string, file: File, options?: RawAxiosRequestConfig) {
+        return FileApiFp(this.configuration).postUploadFile(name, file, options).then((request) => request(this.axios, this.basePath));
     }
 }
 

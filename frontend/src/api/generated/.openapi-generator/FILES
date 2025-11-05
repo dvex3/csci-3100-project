@@ -6,6 +6,10 @@ common.ts
 configuration.ts
 docs/AuthApi.md
 docs/AuthResponse.md
+docs/FileApi.md
+docs/FileContentModel.md
+docs/FileInfoListResponse.md
+docs/FileInfoResponse.md
 docs/UserResponse.md
 git_push.sh
 index.ts

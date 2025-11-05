@@ -10,14 +10,12 @@ type AuthContextType = {
     register: (email: string, password: string, licenseKey: string) => Promise<AuthResponse | undefined>,
     login: (email: string, password: string) => Promise<AuthResponse | undefined>,
     logout: () => void,
-    isAuthLoading: boolean
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({children}: { children: React.ReactNode }) {
     const [user, setUser] = useState<UserResponse | null>(null)
-    const [isAuthLoading, setIsAuthLoading] = useState(true)
 
     const router = useRouter()
 
@@ -29,8 +27,6 @@ export function AuthProvider({children}: { children: React.ReactNode }) {
                 console.log(error)
                 localStorage.removeItem("user_token")
                 router.push("/")
-            }).finally(() => {
-                setIsAuthLoading(false)
             })
         }
     }, [router])
@@ -79,7 +75,7 @@ export function AuthProvider({children}: { children: React.ReactNode }) {
         }
     }
 
-    return <AuthContext.Provider value={{user, register, login, logout, isAuthLoading}}>
+    return <AuthContext.Provider value={{user, register, login, logout}}>
         {children}
     </AuthContext.Provider>
 }

@@ -48,7 +48,7 @@ export default function LoginForm() {
         <div className="min-h-screen flex items-center justify-center bg-background p-4">
             <Card className="w-full max-w-md ">
                 <CardHeader className="space-y-1">
-                    <CardTitle className="text-2xl font-bold text-balance">Welcome back</CardTitle>
+                    <CardTitle className="text-2xl font-bold text-balance">Welcome</CardTitle>
                     <CardDescription className="text-pretty">Enter your credentials to access your account</CardDescription>
                 </CardHeader>
                 <CardContent>
