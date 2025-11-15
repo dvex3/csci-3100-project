@@ -1,0 +1,130 @@
+class Library:
+    def __init__(self, name, location):
+        self.name = name
+        self.location = location
+
+    def display(self):
+        print(f"Library Name: {self.name}, Location: {self.location}")
+
+class OurLibrary(Library):
+    def __init__(self, name, location, collection_size):
+        super().__init__(name, location)
+        self.collection_size = collection_size
+
+    def display(self):
+        super().display()
+        print(f"Collection Size: {self.collection_size} books")
+
+class LibraryWithSpecialFeature(OurLibrary):
+    def __init__(self, name, location, collection_size, special_feature):
+        OurLibrary.__init__(self, name, location, collection_size)
+        self.special_feature = special_feature
+
+    def display(self):
+        super().display()
+        print(f"Special Feature: {self.special_feature}")
+
+class LibraryWithOpeningHours(OurLibrary):
+    def __init__(self, name, location, collection_size, opening_hours):
+        OurLibrary.__init__(self, name, location, collection_size)
+        self.opening_hours = opening_hours
+
+    def display(self):
+        super().display()
+        print(f"Opening Hours: {self.opening_hours}")
+
+class LibraryWithHeadLibrarian(OurLibrary):
+    def __init__(self, name, location, collection_size, head_librarian):
+        OurLibrary.__init__(self, name, location, collection_size)
+        self.head_librarian = head_librarian
+    def display(self):
+        super().display()
+        print(f"Head Librarian: {self.head_librarian}")
+
+class ResearchLibrary(OurLibrary):
+    def __init__(self, name, location, collection_size, events):
+        super().__init__(name, location, collection_size)
+        self.events = events
+
+    def display(self):
+        super().display()
+        print(f"Events: {self.events}")
+
+class TechLibrary(OurLibrary):
+    def __init__(self, name, location, collection_size, technology):
+        super().__init__(name, location, collection_size)
+        self.technology = technology
+
+    def display(self):
+        super().display()
+        print(f"Technology: {self.technology}")
+
+class FamedLibrary(OurLibrary):
+    def __init__(self, name, location, collection_size, global_ranking):
+        super().__init__(name, location, collection_size)
+        self.global_ranking = global_ranking
+
+    def display(self):
+        super().display()
+        print(f"Global Ranking: {self.global_ranking}")
+
+class LibraryInCentral(
+LibraryWithSpecialFeature, LibraryWithOpeningHours,
+LibraryWithHeadLibrarian
+):
+    def __init__(
+    self, name, location, collection_size, special_feature,
+    opening_hours, head_librarian
+    ):
+        LibraryWithSpecialFeature.__init__(self, name, location,
+        collection_size, special_feature)
+        LibraryWithOpeningHours.__init__(self, name, location,
+        collection_size, opening_hours)
+        LibraryWithHeadLibrarian.__init__(self, name, location,
+        collection_size, head_librarian)
+
+class LibraryInCausewayBay(LibraryWithSpecialFeature,
+LibraryWithHeadLibrarian, TechLibrary):
+    def __init__(
+    self, name, location, collection_size, special_feature,
+    head_librarian, technology
+    ):
+        LibraryWithSpecialFeature.__init__(self, name, location,
+        collection_size, special_feature)
+        LibraryWithHeadLibrarian.__init__(self, name, location,
+        collection_size, head_librarian)
+        TechLibrary.__init__(self, name, location, collection_size,
+        technology)
+
+class LibraryInKowloon(LibraryWithOpeningHours, LibraryWithHeadLibrarian,
+FamedLibrary):
+    def __init__(
+    self, name, location, collection_size, opening_hours, head_librarian,
+    global_ranking
+    ):
+        LibraryWithOpeningHours.__init__(self, name, location,
+        collection_size, opening_hours)
+        LibraryWithHeadLibrarian.__init__(self, name, location,
+        collection_size, head_librarian)
+        FamedLibrary.__init__(self, name, location, collection_size,
+        global_ranking)
+
+def print_library(lib: Library):
+    lib.display()
+
+# Example usage:
+if __name__ == "__main__":
+    library_central = LibraryInCentral(
+    "Library Central", "Central", 8000, "Study Rooms", "10 AM - 6 PM",
+    "John Doe"
+    )
+    library_cwb = LibraryInCausewayBay(
+        "Library Causeway Bay",
+        "East Side",
+        6000,
+        "Interactive Learning Zones",
+        "Jane Smith",
+        "Smart Library Tech",
+    )
+    print_library(library_central)
+    print_library(library_cwb)

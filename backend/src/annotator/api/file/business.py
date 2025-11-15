@@ -36,7 +36,7 @@ def process_file_upload(name: str, file: FileStorage):
     db.session.commit()
     file_info = File.find_by_uuid(uuid)
     return dict(
-        uuid=file.uuid,
+        uuid=file_info.uuid,
         created_at=localized_dt_string(file_info.created_at),
         item_name=item_name,
         file_name=file_name,
