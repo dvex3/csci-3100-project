@@ -16,8 +16,19 @@ ai-annotator/
 └── package.json                 # Project dependencies
 \`\`\`
 
+## Installation
+### Insatll dependencies
+```
+npm install
+```
+___
 
-
+## Usage
+### Run server
+```
+npm run dev
+```
+The page available at `http://localhost:3000`
 
 
 
