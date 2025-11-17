@@ -20,7 +20,7 @@ class File(db.Model):
     __tablename__ = "site_file"
 
     uuid = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid4()))
-    item_name = db.Column(db.String(100), nullable=False, unique=True)
+    item_name = db.Column(db.String(100), nullable=False)
     file_name = db.Column(db.String(100), nullable=False)
     created_at = db.Column(db.DateTime, default=utc_now)
     owner_id = db.Column(

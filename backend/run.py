@@ -5,6 +5,7 @@ import os
 import click
 
 from annotator import create_app, db
+from annotator.models.annotation import Annotation
 from annotator.models.file import File
 from annotator.models.token_blacklist import BlacklistedToken
 from annotator.models.user import User
@@ -21,6 +22,7 @@ def shell():
         "BlacklistedToken": BlacklistedToken,
         "LicenseKey": LicenseKey,
         "File": File,
+        "Annotation": Annotation,
     }
 
 
