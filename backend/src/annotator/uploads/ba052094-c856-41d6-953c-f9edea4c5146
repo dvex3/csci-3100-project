@@ -1,0 +1,172 @@
+def init_board():
+    # board[x][y]    x = row, y = column 
+    board = [["." for i in range(6)] for j in range(6)]
+    board[2][2] = "W"
+    board[3][3] = "W"
+    board[2][3] = "B"
+    board[3][2] = "B"
+    return board
+
+
+def init_test_board():
+    # board[x][y]    x = row, y = column
+    board = [
+        [".", ".", ".", ".", ".", "."],
+        [".", ".", ".", "B", ".", "."],
+        [".", ".", "W", "B", "B", "."],
+        [".", ".", "W", "B", ".", "B"],
+        [".", ".", "W", "B", "B", "."],
+        [".", ".", ".", "B", ".", "."],  
+    ]
+    return board
+
+
+def print_board(board):
+    print("    a  b  c  d  e  f")
+    print("  +------------------+")
+    for i in range(6):
+        line = str(6 - i)
+        line += " | "
+        for j in range(6):
+            line += board[6 - i - 1][j]
+            if j != 5:
+                line += "  "
+        line += " |"
+        print(line)
+    print("  +------------------+")
+    print("    a  b  c  d  e  f")
+
+
+def flip_disc_dir(board, row, column, x_dir, y_dir, curr, opp) -> bool:
+    tmp_x, tmp_y = column + x_dir, row + y_dir
+    discs_to_flip = []
+
+    while 0 <= tmp_x < 6 and 0 <= tmp_y < 6 and board[tmp_y][tmp_x] == opp:
+        discs_to_flip.append((tmp_y, tmp_x))
+        tmp_x += x_dir
+        tmp_y += y_dir
+
+    if 0 <= tmp_x < 6 and 0 <= tmp_y < 6 and board[tmp_y][tmp_x] == curr and discs_to_flip:
+        for flip_row, flip_column in discs_to_flip:
+            board[flip_row][flip_column] = curr
+        return True
+
+    return False
+
+
+def flip_disc(board, row, column, turn) -> bool:
+    curr = "W" if turn else "B"
+    opp = "W" if not turn else "B"
+    board[row][column] = curr
+    flipped = False
+    directions = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]
+
+    for x_dir, y_dir in directions:
+        if flip_disc_dir(board, row, column, x_dir, y_dir, curr, opp):
+            flipped = True
+    
+    return flipped
+
+
+def any_flip_disc(board, turn) -> bool:
+    for i in range(6):
+        for j in range(6):
+            if board[i][j] != ".":
+                continue
+            tmp_board = [["." for i in range(6)] for j in range(6)]
+            for x in range(6):
+                for y in range(6):
+                    tmp_board[x][y] = board[x][y]
+            if flip_disc(tmp_board, i, j, turn):
+                return True
+    
+    return False
+
+
+def validate_move(board, move, turn):
+    # not the player's turn
+    if turn == 0 and move[0] != "B":
+        return 0
+    if turn == 1 and move[0] != "W":
+        return 0
+
+    # malformed
+    if move[1] != "-":
+        return 0
+
+    # pass
+    if len(move) == 6 and move[2:6] == "pass":
+        # has legal moves
+        if any_flip_disc(board, turn):
+            return 0
+
+        return 2
+        
+    # normal
+    else:
+        # malformed
+        if len(move) != 4:
+            return 0
+
+        column = ord(move[2]) - ord("a")
+        row = int(move[3]) - 1
+
+        # square invalid or occupied
+        if column < 0 or column > 5:
+            return 0
+        if row < 0 or row > 5:
+            return 0
+        if board[row][column] != ".":
+            return 0
+        
+        # flips no discs
+        if not flip_disc(board, row, column, turn):
+            board[row][column] = "."
+            return 0
+
+        return 1
+
+
+def main():
+    board = init_board()
+    turn = 0 # 0 = black, 1 = white
+    passes = 0
+
+    print_board(board)
+
+    # main loop
+    while True:
+        # validation
+        while True:
+            move = ""
+            if turn:
+                move = input("White move: ")
+            else:
+                move = input("Black move: ")
+            status = validate_move(board, move, turn)
+            if not status:
+                print("error " + move)
+                continue
+            if status == 2:
+                passes += 1
+            else:
+                passes = 0
+                print_board(board)
+            break
+        if passes == 2:
+            break
+        turn = not turn
+    
+    # score count
+    b_count = 0
+    w_count = 0
+    for i in range(6):
+        for j in range(6):
+            if board[i][j] == "B":
+                b_count += 1
+            if board[i][j] == "W":
+                w_count += 1
+    print("Final Score — Black: " + str(b_count) + ", White: " + str(w_count))
+
+
+main()
