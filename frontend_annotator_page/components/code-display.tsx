@@ -89,13 +89,23 @@ export function CodeDisplay({ code, selectedFunction, onFunctionClick }: CodeDis
       // Check if this line contains a selected function name
       let displayLine = line
 
-      if (functionOnLine) {
-        // Make function name clickable
-        displayLine = line.replace(
-          functionOnLine.name,   
-          `<span class="function-name" data-function="${functionOnLine.name}">${functionOnLine.name}</span>`,       
-        )
-      }
+if (functionOnLine) {
+  const isSelected = selectedFunction === functionOnLine.name
+
+  displayLine = line.replace(
+    functionOnLine.name,
+    `<span 
+      class="function-name inline-block px-1.5 py-0.5 rounded cursor-pointer transition-all
+             ${isSelected 
+               ? 'bg-blue-500 text-white font-semibold shadow-md ring-2 ring-blue-600' 
+               : 'hover:bg-gray-200 dark:hover:bg-gray-700 text-blue-600 dark:text-blue-400 font-medium'
+             }"
+      data-function="${functionOnLine.name}"
+    >
+      ${functionOnLine.name}
+    </span>`
+  )
+}
 
       return (
         <div
