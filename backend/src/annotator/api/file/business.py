@@ -18,19 +18,20 @@ from annotator.util.datetime_util import localized_dt_string
 
 @token_required
 def process_file_upload(name: str, file: FileStorage):
-
     owner_id = process_file_upload.public_id
     owner = User.find_by_public_id(owner_id)
     item_name = name
     file_name = file.filename
     uuid = str(uuid4())
     file.save(os.path.join(current_app.config["UPLOAD_FOLDER"], uuid))
+    parsed_map = "placeholder"
     new_file_info = File(
         uuid=uuid,
         item_name=item_name,
         file_name=file_name,
         owner_id=owner_id,
         owner=owner,
+        parsed_map=parsed_map,
     )
     db.session.add(new_file_info)
     db.session.commit()
@@ -41,6 +42,7 @@ def process_file_upload(name: str, file: FileStorage):
         item_name=item_name,
         file_name=file_name,
         owner_id=owner_id,
+        parsed_map=parsed_map,
     )
 
 

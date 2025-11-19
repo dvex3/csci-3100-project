@@ -22,6 +22,7 @@ file_info_model = Model(
         "file_name": fields.String,
         "created_at": fields.String,
         "owner_id": fields.String,
+        "parsed_map": fields.String,
     },
 )
 
