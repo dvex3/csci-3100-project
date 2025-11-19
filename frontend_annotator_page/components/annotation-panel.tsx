@@ -1,9 +1,10 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react" // ADD useEffect import
 import { Button } from "@/components/ui/button"
 import { Spinner } from "@/components/ui/spinner"
 import { ChevronUp } from "lucide-react"
+import { buttonGroupVariants } from "./ui/button-group"
 
 /**
  * ANNOTATION PANEL COMPONENT
@@ -29,6 +30,12 @@ interface AnnotationPanelProps {
 export function AnnotationPanel({ annotation, selectedFunction, isLoading, onUploadNew }: AnnotationPanelProps) {
   const [detailedAnnotation, setDetailedAnnotation] = useState<string | null>(null)
   const [isLoadingSayMore, setIsLoadingSayMore] = useState(false)
+
+  // ADD THIS: Reset detailed state when switching functions
+  useEffect(() => {
+    setDetailedAnnotation(null)
+    setIsLoadingSayMore(false) // Optional: Reset loading too
+  }, [selectedFunction])
 
   /**
    * Handles "Say More" button click
@@ -98,47 +105,62 @@ export function AnnotationPanel({ annotation, selectedFunction, isLoading, onUpl
         {/* Header with function name */}
         <div className="border-b border-border pb-4">
           <h3 className="text-lg font-semibold text-foreground">{selectedFunction}()</h3>
-          <p className="text-xs text-muted-foreground mt-1">Annotation</p>
         </div>
 
-        {/* Annotation content */}
-        <div className="flex-1 overflow-y-auto bg-muted/30 rounded-lg p-4 font-mono text-sm text-foreground">
-          {/* Display annotation - handle different data formats */}
-          {typeof annotation === "string" ? (
-            <pre className="whitespace-pre-wrap wrap-break-word">{annotation}</pre>
-          ) : (
-            <pre className="whitespace-pre-wrap wrap-break-word">{JSON.stringify(annotation, null, 2)}</pre>
+        {/* Single scrollable area - original + detailed (only when available) */}
+        <div className="flex-1 overflow-y-auto bg-muted/30 rounded-lg p-5 space-y-8 font-mono text-sm">
+          {/* Original Annotation - always shown first */}
+          <div className="text-foreground">
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3 opacity-80">
+              Annotation
+            </p>
+            <pre className="whitespace-pre-wrap break-words leading-relaxed">
+              {typeof annotation === "string" ? annotation : JSON.stringify(annotation, null, 2)}
+            </pre>
+          </div>
+
+          {/* Detailed Annotation - ONLY shown after "Say More" is clicked and succeeds */}
+          {detailedAnnotation && (
+            <div className="border-l-4 border-primary pl-5 py-1 bg-primary/5 rounded-r-xl">
+              <p className="text-xs font-semibold text-primary uppercase tracking-wider mb-3 flex items-center gap-2">
+                <span>Detailed Explanation</span>
+                <span className="w-1.5 h-1.5 bg-primary rounded-full"></span>
+              </p>
+              <pre className="whitespace-pre-wrap break-words text-foreground/95 leading-relaxed">
+                {detailedAnnotation}
+              </pre>
+            </div>
+          )}
+
+          {/* Loading indicator while waiting for Say More */}
+          {isLoadingSayMore && (
+            <div className="flex items-center gap-3 text-muted-foreground py-4">
+              <Spinner className="w-4 h-4 animate-spin" />
+              <span className="text-sm italic">Generating detailed explanation...</span>
+            </div>
           )}
         </div>
 
-        {/* Show detailed annotation if available */}
-        {detailedAnnotation && (
-          <div className="bg-accent/20 border border-accent rounded-lg p-4 max-h-32 overflow-y-auto">
-            <p className="text-xs font-semibold text-accent-foreground mb-2">More Details:</p>
-            <p className="text-sm text-foreground whitespace-pre-wrap">{detailedAnnotation}</p>
-          </div>
-        )}
-
         {/* Action buttons */}
-        <div className="flex gap-2 pt-4 border-t border-border">
+        <div className="flex gap-3 pt-4 border-t border-border">
           <Button
             onClick={handleSayMore}
             disabled={isLoadingSayMore}
-            variant="outline"
-            className="flex-1 bg-transparent"
+            variant="default"
+            className="flex-1"
           >
             {isLoadingSayMore ? (
               <>
                 <Spinner className="w-4 h-4 mr-2" />
-                Getting details...
+                Thinking...
               </>
+            ) : detailedAnnotation ? (
+              "Say Even More"
             ) : (
               "Say More"
             )}
           </Button>
-          <Button onClick={onUploadNew} variant="outline" className="flex-1 bg-transparent">
-            Upload New
-          </Button>
+
         </div>
       </div>
     )
@@ -148,9 +170,6 @@ export function AnnotationPanel({ annotation, selectedFunction, isLoading, onUpl
   return (
     <div className="h-full flex flex-col items-center justify-center text-center gap-4">
       <p className="text-sm text-muted-foreground">No annotation available for this function</p>
-      <Button onClick={onUploadNew} variant="outline">
-        Upload Another File
-      </Button>
     </div>
   )
 }
