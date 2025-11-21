@@ -44,9 +44,7 @@ export function AuthProvider({children}: { children: React.ReactNode }) {
             console.log(error)
             throw error
         }
-
-        new FileApi(new apiConfig()).postUploadFile()
-        new FileApi(new apiConfig())
+    }
 
     const login = async (email: string, password: string): Promise<AuthResponse | undefined> => {
         try {
