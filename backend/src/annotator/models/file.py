@@ -27,6 +27,7 @@ class File(db.Model):
         db.String(36), db.ForeignKey("site_user.public_id"), nullable=False
     )
     owner = db.relationship("User", backref="files")
+    # parsed_map = db.Column(db.String(1000), nullable=False)
 
     def __repr__(self):
         return f"<file_name={self.file_name}, item_name={self.item_name}>"
