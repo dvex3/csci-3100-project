@@ -48,8 +48,8 @@ class UploadFile(Resource):
         return get_file_info()
 
 
-@file_ns.route("/<uuid>", endpoint="file_action")
-@file_ns.param("uuid", "File UUID.")
+@file_ns.route("/<file_uuid>", endpoint="file_action")
+@file_ns.param("file_uuid", "File UUID.")
 @file_ns.response(int(HTTPStatus.BAD_REQUEST), "Validation error.")
 @file_ns.response(int(HTTPStatus.NOT_FOUND), "File not found.")
 @file_ns.response(int(HTTPStatus.UNAUTHORIZED), "Token is invalid or expired.")

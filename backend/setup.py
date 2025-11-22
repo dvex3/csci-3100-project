@@ -20,6 +20,8 @@ INSTALL_REQUIRES = [
     "werkzeug",
     "sqlalchemy",
     "click",
+    "openai",
+    "pathlib",
 ]
 EXTRAS_REQUIRE = {
     "dev": [

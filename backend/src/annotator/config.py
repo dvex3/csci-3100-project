@@ -15,6 +15,8 @@ class Config:
 
     SECRET_KEY = os.getenv("SECRET_KEY", "open sesame")
     UPLOAD_FOLDER = os.getenv("UPLOAD_FOLDER", os.path.join(HERE, "uploads"))
+    AZURE_OPENAI_ENDPOINT = os.getenv("AZURE_OPENAI_ENDPOINT")
+    AZURE_OPENAI_KEY = os.getenv("AZURE_OPENAI_KEY")
     BCRYPT_LOG_ROUNDS = 4
     TOKEN_EXPIRE_HOURS = 0
     TOKEN_EXPIRE_MINUTES = 0
@@ -35,7 +37,7 @@ class TestingConfig(Config):
 class DevelopmentConfig(Config):
     """Development configuration."""
 
-    TOKEN_EXPIRE_MINUTES = 15
+    TOKEN_EXPIRE_MINUTES = 59
     SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL", SQLITE_DEV)
 
 
