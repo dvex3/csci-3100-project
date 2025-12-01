@@ -15,6 +15,8 @@ from annotator.models.file import File
 from annotator.models.user import User
 from annotator.util.datetime_util import localized_dt_string
 
+from .parser import parse_python_file
+
 
 @token_required
 def process_file_upload(name: str, file: FileStorage):
@@ -24,6 +26,13 @@ def process_file_upload(name: str, file: FileStorage):
     file_name = file.filename
     uuid = str(uuid4())
     file.save(os.path.join(current_app.config["UPLOAD_FOLDER"], uuid))
+    
+    with open(file_path, "r", encoding="utf-8") as f:
+        code = f.read()
+    
+    parsed_map_dict = parse_python_file(code)
+    parsed_map_json = json.dumps(parsed_map_dict)
+
     parsed_map = "placeholder"
     new_file_info = File(
         uuid=uuid,
@@ -42,7 +51,7 @@ def process_file_upload(name: str, file: FileStorage):
         item_name=item_name,
         file_name=file_name,
         owner_id=owner_id,
-        parsed_map=parsed_map,
+        parsed_map=parsed_map_json,
     )
 
 
