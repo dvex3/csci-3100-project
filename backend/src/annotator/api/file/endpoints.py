@@ -60,12 +60,12 @@ class FileAction(Resource):
     @file_ns.doc(security="Bearer")
     @file_ns.marshal_with(file_content_model)
     @file_ns.response(int(HTTPStatus.OK), "File content successfully retrieved.")
-    def get(self, uuid):
+    def get(self, file_uuid):
         """Retrieve content of a file"""
-        return get_file_content(uuid)
+        return get_file_content(file_uuid)
 
     @file_ns.doc(security="Bearer")
     @file_ns.response(int(HTTPStatus.OK), "File deleted successfully.")
-    def delete(self, uuid):
+    def delete(self, file_uuid):
         """Delete a file"""
-        return delete_file(uuid)
+        return delete_file(file_uuid)

@@ -43,7 +43,7 @@ def get_owner_id(file_uuid):
 def annotate(file_uuid, function_name="hello_world"):
     owner_id = get_owner_id(file_uuid)
     parsed_map = get_parsed_map(file_uuid)
-    annotation
+    annotation = chat(function_name, parsed_map)
     uuid = str(uuid4())
     new_annotation = Annotation(
         uuid=uuid,

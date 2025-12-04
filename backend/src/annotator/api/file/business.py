@@ -28,10 +28,10 @@ def process_file_upload(name: str, file: FileStorage):
     uuid = str(uuid4())
     file_path = os.path.join(current_app.config["UPLOAD_FOLDER"], uuid)
     file.save(file_path)
-    
+
     with open(file_path, "r", encoding="utf-8") as f:
         code = f.read()
-    
+
     parsed_map_dict = parse_python_file(code)
     parsed_map_json = json.dumps(parsed_map_dict)
 
@@ -41,7 +41,7 @@ def process_file_upload(name: str, file: FileStorage):
         file_name=file_name,
         owner_id=owner_id,
         owner=owner,
-        parsed_map=parsed_map,
+        parsed_map=parsed_map_json,
     )
     db.session.add(new_file_info)
     db.session.commit()
