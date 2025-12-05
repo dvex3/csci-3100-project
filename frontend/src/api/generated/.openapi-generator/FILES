@@ -4,6 +4,9 @@ api.ts
 base.ts
 common.ts
 configuration.ts
+docs/AnnotationApi.md
+docs/AnnotationInfoListResponse.md
+docs/AnnotationInfoResponse.md
 docs/AuthApi.md
 docs/AuthResponse.md
 docs/FileApi.md

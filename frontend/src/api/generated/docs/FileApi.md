@@ -4,8 +4,8 @@ All URIs are relative to */api/v1*
 
 |Method | HTTP request | Description|
 |------------- | ------------- | -------------|
-|[**deleteFileAction**](#deletefileaction) | **DELETE** /file/{uuid} | Delete a file|
-|[**getFileAction**](#getfileaction) | **GET** /file/{uuid} | Retrieve content of a file|
+|[**deleteFileAction**](#deletefileaction) | **DELETE** /file/{file_uuid} | Delete a file|
+|[**getFileAction**](#getfileaction) | **GET** /file/{file_uuid} | Retrieve content of a file|
 |[**getUploadFile**](#getuploadfile) | **GET** /file/upload | Retrieve info of all files from a user|
 |[**postUploadFile**](#postuploadfile) | **POST** /file/upload | Upload a file to the server|
 
@@ -24,10 +24,10 @@ import {
 const configuration = new Configuration();
 const apiInstance = new FileApi(configuration);
 
-let uuid: string; //File UUID. (default to undefined)
+let fileUuid: string; //File UUID. (default to undefined)
 
 const { status, data } = await apiInstance.deleteFileAction(
-    uuid
+    fileUuid
 );
 ```
 
@@ -35,7 +35,7 @@ const { status, data } = await apiInstance.deleteFileAction(
 
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
-| **uuid** | [**string**] | File UUID. | defaults to undefined|
+| **fileUuid** | [**string**] | File UUID. | defaults to undefined|
 
 
 ### Return type
@@ -78,10 +78,10 @@ import {
 const configuration = new Configuration();
 const apiInstance = new FileApi(configuration);
 
-let uuid: string; //File UUID. (default to undefined)
+let fileUuid: string; //File UUID. (default to undefined)
 
 const { status, data } = await apiInstance.getFileAction(
-    uuid
+    fileUuid
 );
 ```
 
@@ -89,7 +89,7 @@ const { status, data } = await apiInstance.getFileAction(
 
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
-| **uuid** | [**string**] | File UUID. | defaults to undefined|
+| **fileUuid** | [**string**] | File UUID. | defaults to undefined|
 
 
 ### Return type
@@ -164,7 +164,7 @@ This endpoint does not have any parameters.
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **postUploadFile**
-> FileInfoResponse postUploadFile()
+> postUploadFile()
 
 
 ### Example
@@ -197,7 +197,7 @@ const { status, data } = await apiInstance.postUploadFile(
 
 ### Return type
 
-**FileInfoResponse**
+void (empty response body)
 
 ### Authorization
 
@@ -206,7 +206,7 @@ const { status, data } = await apiInstance.postUploadFile(
 ### HTTP request headers
 
  - **Content-Type**: multipart/form-data
- - **Accept**: application/json
+ - **Accept**: Not defined
 
 
 ### HTTP response details
@@ -216,7 +216,6 @@ const { status, data } = await apiInstance.postUploadFile(
 |**400** | Validation error. |  -  |
 |**401** | Token is invalid or expired. |  -  |
 |**201** | File was successfully created. |  -  |
-|**200** | Success |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 

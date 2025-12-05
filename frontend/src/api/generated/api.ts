@@ -26,6 +26,62 @@ import { BASE_PATH, COLLECTION_FORMATS, BaseAPI, RequiredError, operationServerM
 /**
  * 
  * @export
+ * @interface AnnotationInfoListResponse
+ */
+export interface AnnotationInfoListResponse {
+    /**
+     * 
+     * @type {Array<AnnotationInfoResponse>}
+     * @memberof AnnotationInfoListResponse
+     */
+    'info'?: Array<AnnotationInfoResponse>;
+}
+/**
+ * 
+ * @export
+ * @interface AnnotationInfoResponse
+ */
+export interface AnnotationInfoResponse {
+    /**
+     * 
+     * @type {string}
+     * @memberof AnnotationInfoResponse
+     */
+    'uuid'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof AnnotationInfoResponse
+     */
+    'annotation'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof AnnotationInfoResponse
+     */
+    'function_name'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof AnnotationInfoResponse
+     */
+    'created_at'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof AnnotationInfoResponse
+     */
+    'file_id'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof AnnotationInfoResponse
+     */
+    'owner_id'?: string;
+}
+/**
+ * 
+ * @export
  * @interface AuthResponse
  */
 export interface AuthResponse {
@@ -122,6 +178,12 @@ export interface FileInfoResponse {
      * @memberof FileInfoResponse
      */
     'owner_id'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof FileInfoResponse
+     */
+    'parsed_map'?: string;
 }
 /**
  * 
@@ -160,6 +222,202 @@ export interface UserResponse {
      */
     'token_expires_in'?: string;
 }
+
+/**
+ * AnnotationApi - axios parameter creator
+ * @export
+ */
+export const AnnotationApiAxiosParamCreator = function (configuration?: Configuration) {
+    return {
+        /**
+         * 
+         * @param {string} fileUuid File UUID.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getGetAnnotation: async (fileUuid: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'fileUuid' is not null or undefined
+            assertParamExists('getGetAnnotation', 'fileUuid', fileUuid)
+            const localVarPath = `/annotation/{file_uuid}`
+                .replace(`{${"file_uuid"}}`, encodeURIComponent(String(fileUuid)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Bearer required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Upload generated chat message to db
+         * @param {string} functionName 
+         * @param {string} fileUuid 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        postAnnotate: async (functionName: string, fileUuid: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'functionName' is not null or undefined
+            assertParamExists('postAnnotate', 'functionName', functionName)
+            // verify required parameter 'fileUuid' is not null or undefined
+            assertParamExists('postAnnotate', 'fileUuid', fileUuid)
+            const localVarPath = `/annotation/generate`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+            const localVarFormParams = new ((configuration && configuration.formDataCtor) || FormData)();
+
+            // authentication Bearer required
+            await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
+
+
+            if (functionName !== undefined) { 
+                localVarFormParams.append('function_name', functionName as any);
+            }
+    
+            if (fileUuid !== undefined) { 
+                localVarFormParams.append('file_uuid', fileUuid as any);
+            }
+    
+    
+            localVarHeaderParameter['Content-Type'] = 'multipart/form-data';
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = localVarFormParams;
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+    }
+};
+
+/**
+ * AnnotationApi - functional programming interface
+ * @export
+ */
+export const AnnotationApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = AnnotationApiAxiosParamCreator(configuration)
+    return {
+        /**
+         * 
+         * @param {string} fileUuid File UUID.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getGetAnnotation(fileUuid: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AnnotationInfoListResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getGetAnnotation(fileUuid, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AnnotationApi.getGetAnnotation']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary Upload generated chat message to db
+         * @param {string} functionName 
+         * @param {string} fileUuid 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async postAnnotate(functionName: string, fileUuid: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AnnotationInfoResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.postAnnotate(functionName, fileUuid, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['AnnotationApi.postAnnotate']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+    }
+};
+
+/**
+ * AnnotationApi - factory interface
+ * @export
+ */
+export const AnnotationApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = AnnotationApiFp(configuration)
+    return {
+        /**
+         * 
+         * @param {string} fileUuid File UUID.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getGetAnnotation(fileUuid: string, options?: RawAxiosRequestConfig): AxiosPromise<AnnotationInfoListResponse> {
+            return localVarFp.getGetAnnotation(fileUuid, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Upload generated chat message to db
+         * @param {string} functionName 
+         * @param {string} fileUuid 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        postAnnotate(functionName: string, fileUuid: string, options?: RawAxiosRequestConfig): AxiosPromise<AnnotationInfoResponse> {
+            return localVarFp.postAnnotate(functionName, fileUuid, options).then((request) => request(axios, basePath));
+        },
+    };
+};
+
+/**
+ * AnnotationApi - object-oriented interface
+ * @export
+ * @class AnnotationApi
+ * @extends {BaseAPI}
+ */
+export class AnnotationApi extends BaseAPI {
+    /**
+     * 
+     * @param {string} fileUuid File UUID.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AnnotationApi
+     */
+    public getGetAnnotation(fileUuid: string, options?: RawAxiosRequestConfig) {
+        return AnnotationApiFp(this.configuration).getGetAnnotation(fileUuid, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Upload generated chat message to db
+     * @param {string} functionName 
+     * @param {string} fileUuid 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AnnotationApi
+     */
+    public postAnnotate(functionName: string, fileUuid: string, options?: RawAxiosRequestConfig) {
+        return AnnotationApiFp(this.configuration).postAnnotate(functionName, fileUuid, options).then((request) => request(this.axios, this.basePath));
+    }
+}
+
+
 
 /**
  * AuthApi - axios parameter creator
@@ -586,15 +844,15 @@ export const FileApiAxiosParamCreator = function (configuration?: Configuration)
         /**
          * 
          * @summary Delete a file
-         * @param {string} uuid File UUID.
+         * @param {string} fileUuid File UUID.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        deleteFileAction: async (uuid: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'uuid' is not null or undefined
-            assertParamExists('deleteFileAction', 'uuid', uuid)
-            const localVarPath = `/file/{uuid}`
-                .replace(`{${"uuid"}}`, encodeURIComponent(String(uuid)));
+        deleteFileAction: async (fileUuid: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'fileUuid' is not null or undefined
+            assertParamExists('deleteFileAction', 'fileUuid', fileUuid)
+            const localVarPath = `/file/{file_uuid}`
+                .replace(`{${"file_uuid"}}`, encodeURIComponent(String(fileUuid)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -623,15 +881,15 @@ export const FileApiAxiosParamCreator = function (configuration?: Configuration)
         /**
          * 
          * @summary Retrieve content of a file
-         * @param {string} uuid File UUID.
+         * @param {string} fileUuid File UUID.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getFileAction: async (uuid: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'uuid' is not null or undefined
-            assertParamExists('getFileAction', 'uuid', uuid)
-            const localVarPath = `/file/{uuid}`
-                .replace(`{${"uuid"}}`, encodeURIComponent(String(uuid)));
+        getFileAction: async (fileUuid: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'fileUuid' is not null or undefined
+            assertParamExists('getFileAction', 'fileUuid', fileUuid)
+            const localVarPath = `/file/{file_uuid}`
+                .replace(`{${"file_uuid"}}`, encodeURIComponent(String(fileUuid)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -754,12 +1012,12 @@ export const FileApiFp = function(configuration?: Configuration) {
         /**
          * 
          * @summary Delete a file
-         * @param {string} uuid File UUID.
+         * @param {string} fileUuid File UUID.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async deleteFileAction(uuid: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.deleteFileAction(uuid, options);
+        async deleteFileAction(fileUuid: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.deleteFileAction(fileUuid, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['FileApi.deleteFileAction']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
@@ -767,12 +1025,12 @@ export const FileApiFp = function(configuration?: Configuration) {
         /**
          * 
          * @summary Retrieve content of a file
-         * @param {string} uuid File UUID.
+         * @param {string} fileUuid File UUID.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getFileAction(uuid: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FileContentModel>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getFileAction(uuid, options);
+        async getFileAction(fileUuid: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FileContentModel>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getFileAction(fileUuid, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['FileApi.getFileAction']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
@@ -797,7 +1055,7 @@ export const FileApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async postUploadFile(name: string, file: File, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FileInfoResponse>> {
+        async postUploadFile(name: string, file: File, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.postUploadFile(name, file, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['FileApi.postUploadFile']?.[localVarOperationServerIndex]?.url;
@@ -816,22 +1074,22 @@ export const FileApiFactory = function (configuration?: Configuration, basePath?
         /**
          * 
          * @summary Delete a file
-         * @param {string} uuid File UUID.
+         * @param {string} fileUuid File UUID.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        deleteFileAction(uuid: string, options?: RawAxiosRequestConfig): AxiosPromise<void> {
-            return localVarFp.deleteFileAction(uuid, options).then((request) => request(axios, basePath));
+        deleteFileAction(fileUuid: string, options?: RawAxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.deleteFileAction(fileUuid, options).then((request) => request(axios, basePath));
         },
         /**
          * 
          * @summary Retrieve content of a file
-         * @param {string} uuid File UUID.
+         * @param {string} fileUuid File UUID.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getFileAction(uuid: string, options?: RawAxiosRequestConfig): AxiosPromise<FileContentModel> {
-            return localVarFp.getFileAction(uuid, options).then((request) => request(axios, basePath));
+        getFileAction(fileUuid: string, options?: RawAxiosRequestConfig): AxiosPromise<FileContentModel> {
+            return localVarFp.getFileAction(fileUuid, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -850,7 +1108,7 @@ export const FileApiFactory = function (configuration?: Configuration, basePath?
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        postUploadFile(name: string, file: File, options?: RawAxiosRequestConfig): AxiosPromise<FileInfoResponse> {
+        postUploadFile(name: string, file: File, options?: RawAxiosRequestConfig): AxiosPromise<void> {
             return localVarFp.postUploadFile(name, file, options).then((request) => request(axios, basePath));
         },
     };
@@ -866,25 +1124,25 @@ export class FileApi extends BaseAPI {
     /**
      * 
      * @summary Delete a file
-     * @param {string} uuid File UUID.
+     * @param {string} fileUuid File UUID.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof FileApi
      */
-    public deleteFileAction(uuid: string, options?: RawAxiosRequestConfig) {
-        return FileApiFp(this.configuration).deleteFileAction(uuid, options).then((request) => request(this.axios, this.basePath));
+    public deleteFileAction(fileUuid: string, options?: RawAxiosRequestConfig) {
+        return FileApiFp(this.configuration).deleteFileAction(fileUuid, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * 
      * @summary Retrieve content of a file
-     * @param {string} uuid File UUID.
+     * @param {string} fileUuid File UUID.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof FileApi
      */
-    public getFileAction(uuid: string, options?: RawAxiosRequestConfig) {
-        return FileApiFp(this.configuration).getFileAction(uuid, options).then((request) => request(this.axios, this.basePath));
+    public getFileAction(fileUuid: string, options?: RawAxiosRequestConfig) {
+        return FileApiFp(this.configuration).getFileAction(fileUuid, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

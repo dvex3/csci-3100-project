@@ -1,4 +1,4 @@
-# FileInfoResponse
+# AnnotationInfoResponse
 
 
 ## Properties
@@ -6,24 +6,24 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **uuid** | **string** |  | [optional] [default to undefined]
-**item_name** | **string** |  | [optional] [default to undefined]
-**file_name** | **string** |  | [optional] [default to undefined]
+**annotation** | **string** |  | [optional] [default to undefined]
+**function_name** | **string** |  | [optional] [default to undefined]
 **created_at** | **string** |  | [optional] [default to undefined]
+**file_id** | **string** |  | [optional] [default to undefined]
 **owner_id** | **string** |  | [optional] [default to undefined]
-**parsed_map** | **string** |  | [optional] [default to undefined]
 
 ## Example
 
 ```typescript
-import { FileInfoResponse } from './api';
+import { AnnotationInfoResponse } from './api';
 
-const instance: FileInfoResponse = {
+const instance: AnnotationInfoResponse = {
     uuid,
-    item_name,
-    file_name,
+    annotation,
+    function_name,
     created_at,
+    file_id,
     owner_id,
-    parsed_map,
 };
 ```
 
