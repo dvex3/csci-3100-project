@@ -2,127 +2,186 @@
 
 import { useMemo } from "react"
 
-/**
- * CODE DISPLAY COMPONENT
- *
- * This component:
- * 1. Displays the uploaded code with syntax highlighting
- * 2. Detects functions in the code
- * 3. Makes function names clickable
- * 4. Highlights the selected function
- *
- * Props:
- * - code: The source code string to display
- * - selectedFunction: The name of the currently selected function
- * - onFunctionClick: Callback when user clicks a function name
- */
+export type DetectedFunction = {
+  name: string
+  lineStart: number
+  lineEnd: number
+  fullCode: string
+}
+
 interface CodeDisplayProps {
   code: string
   selectedFunction: string | null
-  onFunctionClick: (functionName: string) => void
+  onFunctionClick: (fn: DetectedFunction) => void
 }
 
-export function CodeDisplay({ code, selectedFunction, onFunctionClick }: CodeDisplayProps) {
+export function CodeDisplay({
+  code,
+  selectedFunction,
+  onFunctionClick,
+}: CodeDisplayProps) {
   /**
-   * Parses the code to find all functions and their line numbers
-   * Supports: Python
-   *
-   * Returns: Array of { name: string, lineStart: number, lineEnd: number }
+   * Parse the code to find all functions and their line ranges + full code
+   * For JS/TS, this uses a simple brace counter to extend from the line
+   * where the function is declared down to the matching closing brace.
+   * For Python/others, it just takes lines until indentation decreases or is blank.
    */
   const functions = useMemo(() => {
-    const functionList: Array<{ name: string; lineStart: number; lineEnd: number }> = []
+    const functionList: DetectedFunction[] = []
     const lines = code.split("\n")
 
-    // Regex patterns for different function definitions
-    // Matches: function foo(), const foo = (), def foo():, etc.
     const functionPatterns = [
-      /^\s*(async\s+)?function\s+(\w+)\s*\(/, // function declaration
-      /^\s*(export\s+)?(async\s+)?function\s+(\w+)/, // exported function
-      /^\s*const\s+(\w+)\s*=\s*(async\s*)?\(/, // arrow function const
-      /^\s*let\s+(\w+)\s*=\s*(async\s*)?\(/, // arrow function let
-      /^\s*var\s+(\w+)\s*=\s*(async\s*)?\(/, // arrow function var
-      /^\s*def\s+(\w+)\s*\(/, // Python function
-      /^\s*async\s+def\s+(\w+)\s*\(/, // Python async function
+      /^\s*(async\s+)?function\s+(\w+)\s*\(/, // function foo(...)
+      /^\s*(export\s+)?(async\s+)?function\s+(\w+)/, // export function foo
+      /^\s*const\s+(\w+)\s*=\s*(async\s*)?\(/, // const foo = (...) =>
+      /^\s*let\s+(\w+)\s*=\s*(async\s*)?\(/,
+      /^\s*var\s+(\w+)\s*=\s*(async\s*)?\(/,
+      /^\s*def\s+(\w+)\s*\(/, // Python def foo(
+      /^\s*async\s+def\s+(\w+)\s*\(/,
       /^\s*(public|private|protected)?\s+(static\s+)?(async\s+)?(\w+)\s+(\w+)\s*\(/, // Java method
     ]
 
-    lines.forEach((line, index) => {
+    const getIndent = (s: string) => s.match(/^\s*/)?.[0].length ?? 0
+
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i]
+
       for (const pattern of functionPatterns) {
         const match = line.match(pattern)
-        if (match) {
-          // Extract function name from regex groups
-          let functionName = ""
-          if (pattern.source.includes("def")) {
-            functionName = match[1]
-          } else if (pattern.source.includes("public|private")) {
-            functionName = match[5] || match[3]
-          } else {
-            functionName = match[2] || match[1] || ""
-          }
+        if (!match) continue
 
-          if (functionName && !functionList.some((f) => f.name === functionName)) {
-            functionList.push({
-              name: functionName,
-              lineStart: index + 1,
-              lineEnd: index + 1, // Simple version - just marks the definition line
-            })
-          }
+        let functionName = ""
+
+        if (pattern.source.includes("def")) {
+          // Python: def foo( / async def foo(
+          functionName = match[1]
+        } else if (pattern.source.includes("public|private")) {
+          // Java: method name is group 5
+          functionName = match[5] || match[3]
+        } else {
+          // JS/TS: group 2 or 1
+          functionName = (match[2] as string) || (match[1] as string) || ""
         }
+
+        if (!functionName) continue
+
+        // Avoid duplicates for same name
+        if (functionList.some((f) => f.name === functionName)) continue
+
+        let lineStart = i + 1
+        let lineEnd = lineStart
+
+        // Try to expand block for JS/TS/Java using braces
+        if (line.includes("{")) {
+          let braceCount = 0
+          for (let j = i; j < lines.length; j++) {
+            const l = lines[j]
+            for (const ch of l) {
+              if (ch === "{") braceCount++
+              if (ch === "}") braceCount--
+            }
+            if (braceCount === 0) {
+              lineEnd = j + 1
+              break
+            }
+          }
+        } else if (pattern.source.includes("def")) {
+          // Very simple Python heuristic: extend while indentation is greater
+          const baseIndent = getIndent(line)
+          let lastNonEmpty = i + 1
+          for (let j = i + 1; j < lines.length; j++) {
+            const l = lines[j]
+            if (l.trim() === "") {
+              lastNonEmpty = j + 1
+              continue
+            }
+            const indent = getIndent(l)
+            if (indent <= baseIndent) break
+            lastNonEmpty = j + 1
+          }
+          lineEnd = lastNonEmpty
+        }
+
+        const fullCode = lines.slice(lineStart - 1, lineEnd).join("\n")
+
+        functionList.push({
+          name: functionName,
+          lineStart,
+          lineEnd,
+          fullCode,
+        })
+
+        // Stop checking other patterns for this line once matched
+        break
       }
-    })
+    }
 
     return functionList
   }, [code])
 
   /**
-   * Highlights lines and makes functions clickable
-   * Wraps each line in a <span> and detects if it contains a function name
+   * Render code with preserved indentation and clickable function names
    */
   const renderCode = useMemo(() => {
     const lines = code.split("\n")
 
     return lines.map((line, index) => {
       const lineNumber = index + 1
-      const functionOnLine = functions.find((f) => f.lineStart === lineNumber)
-      const isSelected = functionOnLine && functionOnLine.name === selectedFunction
+      const functionOnLine = functions.find(
+        (f) => f.lineStart === lineNumber,
+      )
+      const isSelectedLine =
+        functionOnLine && functionOnLine.name === selectedFunction
 
-      // Check if this line contains a selected function name
-      let displayLine = line
+      let before = line
+      let namePart: string | null = null
+      let after = ""
 
-if (functionOnLine) {
-  const isSelected = selectedFunction === functionOnLine.name
+      if (functionOnLine) {
+        const name = functionOnLine.name
+        const pos = line.indexOf(name)
+        if (pos !== -1) {
+          before = line.slice(0, pos)
+          namePart = name
+          after = line.slice(pos + name.length)
+        }
+      }
 
-  displayLine = line.replace(
-    functionOnLine.name,
-    `<span 
-      class="function-name inline-block px-1.5 py-0.5 rounded cursor-pointer transition-all
-             ${isSelected 
-               ? 'bg-blue-500 text-white font-semibold shadow-md ring-2 ring-blue-600' 
-               : 'hover:bg-gray-200 dark:hover:bg-gray-700 text-blue-600 dark:text-blue-400 font-medium'
-             }"
-      data-function="${functionOnLine.name}"
-    >
-      ${functionOnLine.name}
-    </span>`
-  )
-}
+      const isSelectedFunc =
+        functionOnLine && selectedFunction === functionOnLine.name
 
       return (
         <div
           key={index}
-          className={`py-1 px-4 transition-colors ${
-            isSelected ? "bg-primary/20 border-l-2 border-primary" : "hover:bg-muted/50"
-          }`}
+          className={`py-1 px-4 transition-colors ${isSelectedLine
+            ? "bg-primary/20 border-l-2 border-primary"
+            : "hover:bg-muted/50"
+            }`}
           onClick={() => {
             if (functionOnLine) {
-              onFunctionClick(functionOnLine.name)
+              onFunctionClick(functionOnLine)
             }
           }}
         >
           <span className="inline-block w-12 text-right text-muted-foreground text-sm pr-4 select-none">
             {lineNumber}
           </span>
-          <code className="font-mono text-sm text-foreground" dangerouslySetInnerHTML={{ __html: displayLine }} />
+          <code className="font-mono text-sm text-foreground whitespace-pre">
+            {before}
+            {namePart && (
+              <span
+                className={
+                  "inline-block px-1.5 py-0.5 rounded cursor-pointer transition-all " +
+                  (isSelectedFunc
+                    ? "bg-blue-500 text-white font-semibold shadow-md ring-2 ring-blue-600"
+                    : "hover:bg-gray-200 dark:hover:bg-gray-700 text-blue-600 dark:text-blue-400 font-medium")
+                }
+              >
+                {namePart}
+              </span>
+            )}
+            {after}
+          </code>
         </div>
       )
     })
@@ -135,7 +194,9 @@ if (functionOnLine) {
       </div>
       {functions.length > 0 && (
         <div className="px-4 py-2 border-t border-border bg-muted/20">
-          <p className="text-xs text-muted-foreground">Found {functions.length} function(s) • Click to select</p>
+          <p className="text-xs text-muted-foreground">
+            Found {functions.length} function(s) • Click to select
+          </p>
         </div>
       )}
     </div>

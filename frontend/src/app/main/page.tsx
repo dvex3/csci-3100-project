@@ -2,24 +2,24 @@
 
 import { useState, useRef, useEffect } from "react"
 import { CodeUploader } from "@/src/components/code-uploader"
-import { CodeDisplay } from "@/src/components/code-display"
+import {
+  CodeDisplay,
+  DetectedFunction,
+} from "@/src/components/code-display"
 import { AnnotationPanel } from "@/src/components/annotation-panel"
 import { Card } from "@/src/components/ui/card"
 
-import {
-  AnnotationApi,
-  FileApi,
-  AnnotationInfoResponse,
-} from "@/src/api/generated"
+import { AnnotationApi, FileApi } from "@/src/api/generated"
 import { apiConfig } from "@/src/utils/api-config"
 
 export default function Home() {
   const [uploadedCode, setUploadedCode] = useState<string>("")
-  const [selectedFunction, setSelectedFunction] = useState<string | null>(null)
+  const [selectedFunction, setSelectedFunction] =
+    useState<DetectedFunction | null>(null)
 
-  // Map: function_name -> AnnotationInfoResponse
+  // Map: function_name -> annotation text
   const [annotations, setAnnotations] =
-    useState<Record<string, AnnotationInfoResponse> | undefined>(undefined)
+    useState<Record<string, string> | undefined>(undefined)
 
   const [isLoading, setIsLoading] = useState(false)
   const [topPanelHeight, setTopPanelHeight] = useState(70)
@@ -28,26 +28,24 @@ export default function Home() {
   const containerRef = useRef<HTMLDivElement>(null)
   const isDragging = useRef(false)
 
-  // ----- helper: fetch all annotations for a file -----
+  // Optional helper: refresh all annotations for a file
   const refreshAnnotations = async (uuid: string) => {
     try {
       const annotationRes =
         await new AnnotationApi(apiConfig()).getGetAnnotation(uuid)
 
-      console.log("refreshAnnotations annotationRes.data:", annotationRes.data)
       const info = annotationRes.data.info // AnnotationInfoResponse[] | undefined
 
       if (info && info.length > 0) {
-        const map: Record<string, AnnotationInfoResponse> = {}
+        const map: Record<string, string> = {}
         for (const item of info) {
           const name = item.function_name
-          if (!name) continue
-          map[name] = item
+          const text = item.annotation
+          if (!name || !text) continue
+          map[name] = text
         }
-        console.log("refreshAnnotations map keys:", Object.keys(map))
         setAnnotations(map)
       } else {
-        console.log("refreshAnnotations: info empty or undefined")
         setAnnotations(undefined)
       }
     } catch (error) {
@@ -55,7 +53,7 @@ export default function Home() {
     }
   }
 
-  // ----- upload code only -----
+  // Upload code only
   const handleCodeUpload = async (code: string) => {
     setUploadedCode(code)
     setIsLoading(true)
@@ -64,13 +62,15 @@ export default function Home() {
     const file = new File([blob], "uploaded_code.tsx")
 
     try {
-      const uploadRes = await new FileApi(apiConfig()).postUploadFile("file", file)
+      const uploadRes = await new FileApi(apiConfig()).postUploadFile(
+        "file",
+        file,
+      )
       console.log("uploadRes:", uploadRes)
       const uuid = uploadRes.data.uuid ?? ""
       console.log("uploaded file uuid:", uuid)
       setCurrentuuid(uuid)
 
-      // reset previous annotations when a new file is uploaded
       setAnnotations(undefined)
       setSelectedFunction(null)
     } catch (error) {
@@ -81,28 +81,17 @@ export default function Home() {
     }
   }
 
-  // ----- current annotation for selected function -----
+  // Current annotation text for the selected function
   const getCurrentAnnotation = () => {
-    console.log("getCurrentAnnotation state:", {
-      selectedFunction,
-      annotations,
-    })
     if (!selectedFunction || !annotations) return null
-    const ann = annotations[selectedFunction]
-    console.log("getCurrentAnnotation lookup:", {
-      selectedFunction,
-      ann,
-      allKeys: Object.keys(annotations),
-    })
-    return ann ?? null
+    return annotations[selectedFunction.name] ?? null
   }
 
-  // ----- resize handlers -----
+  // Resize handlers
   const handleMouseMove = (e: MouseEvent) => {
     if (!isDragging.current || !containerRef.current) return
-    const containerRect = containerRef.current.getBoundingClientRect()
-    const newHeight =
-      ((e.clientY - containerRect.top) / containerRect.height) * 100
+    const rect = containerRef.current.getBoundingClientRect()
+    const newHeight = ((e.clientY - rect.top) / rect.height) * 100
     setTopPanelHeight(Math.max(20, Math.min(80, newHeight)))
   }
 
@@ -142,7 +131,10 @@ export default function Home() {
         {/* Upload or main layout */}
         {!uploadedCode ? (
           <div className="flex justify-center items-center min-h-96">
-            <CodeUploader onCodeUpload={handleCodeUpload} isLoading={isLoading} />
+            <CodeUploader
+              onCodeUpload={handleCodeUpload}
+              isLoading={isLoading}
+            />
           </div>
         ) : (
           <div
@@ -160,31 +152,42 @@ export default function Home() {
               <div className="flex-1 overflow-auto">
                 <CodeDisplay
                   code={uploadedCode}
-                  selectedFunction={selectedFunction}
+                  selectedFunction={selectedFunction?.name ?? null}
                   onFunctionClick={async (fn) => {
-                    console.log("clicked function:", fn)
+                    console.log("clicked function object:", fn)
                     setSelectedFunction(fn)
 
                     if (!currentuuid) {
-                      console.warn("No currentuuid yet, cannot generate annotation")
+                      console.warn(
+                        "No currentuuid yet, cannot generate annotation",
+                      )
                       return
                     }
 
                     try {
                       setIsLoading(true)
-                      // 1) ask backend to generate annotation for this function+file
+                      // Send full function code plus file UUID to backend
                       const postRes =
-                        await new AnnotationApi(apiConfig()).postAnnotate(
-                          fn,
-                          currentuuid,
-                        )
+                        await new AnnotationApi(
+                          apiConfig(),
+                        ).postAnnotate(fn.fullCode, currentuuid)
                       console.log("postAnnotate result:", postRes.data)
 
-                      // 2) reload full annotation list for this file
-                      await refreshAnnotations(currentuuid)
+                      const text = postRes.data.annotation
+                      if (text) {
+                        setAnnotations((prev) => ({
+                          ...(prev ?? {}),
+                          [fn.name]: text,
+                        }))
+                      }
+
+                      // Optionally sync with backend list:
+                      // await refreshAnnotations(currentuuid)
                     } catch (error) {
                       console.error("Error generating annotation:", error)
-                      alert("Error generating annotation. Please try again.")
+                      alert(
+                        "Error generating annotation. Please try again.",
+                      )
                     } finally {
                       setIsLoading(false)
                     }
@@ -209,7 +212,7 @@ export default function Home() {
             >
               <AnnotationPanel
                 annotation={getCurrentAnnotation()}
-                selectedFunction={selectedFunction}
+                selectedFunction={selectedFunction?.name ?? null}
                 isLoading={isLoading}
                 onUploadNew={() => {
                   setUploadedCode("")

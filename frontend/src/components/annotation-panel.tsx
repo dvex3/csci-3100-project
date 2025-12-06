@@ -41,36 +41,6 @@ export function AnnotationPanel({ annotation, selectedFunction, isLoading, onUpl
    * Sends request to backend asking for more detailed annotation
    * about the selected function
    */
-  const handleSayMore = async () => {
-    if (!selectedFunction || !annotation) return
-
-    setIsLoadingSayMore(true)
-    try {
-      // Send request to backend for more detailed annotation
-      const response = await fetch("src/api/say-more", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          functionName: selectedFunction,
-          currentAnnotation: annotation,
-        }),
-      })
-
-      if (!response.ok) {
-        throw new Error("Failed to get more details")
-      }
-
-      const data = await response.json()
-      setDetailedAnnotation(data.detailedAnnotation || data.details)
-    } catch (error) {
-      console.error("Error getting more details:", error)
-      alert("Failed to get more details. Please try again.")
-    } finally {
-      setIsLoadingSayMore(false)
-    }
-  }
 
   // Show empty state if no function is selected
   if (!selectedFunction) {
@@ -140,28 +110,9 @@ export function AnnotationPanel({ annotation, selectedFunction, isLoading, onUpl
           )}
         </div>
 
-        {/* Action buttons */}
-        <div className="flex gap-3 pt-4 border-t border-border">
-          <Button
-            onClick={handleSayMore}
-            disabled={isLoadingSayMore}
-            variant="default"
-            className="flex-1"
-          >
-            {isLoadingSayMore ? (
-              <>
-                <Spinner className="w-4 h-4 mr-2" />
-                Thinking...
-              </>
-            ) : detailedAnnotation ? (
-              "Say Even More"
-            ) : (
-              "Say More"
-            )}
-          </Button>
+        
 
         </div>
-      </div>
     )
   }
 
