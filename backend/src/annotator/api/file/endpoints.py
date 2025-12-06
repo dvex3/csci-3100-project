@@ -31,6 +31,7 @@ class UploadFile(Resource):
     """Handles HTTP requests to URL: /api/v1/file/upload"""
 
     @file_ns.doc(security="Bearer")
+    @file_ns.marshal_with(file_info_model)
     @file_ns.expect(file_upload_parser)
     @file_ns.response(int(HTTPStatus.CREATED), "File was successfully created.")
     def post(self):
