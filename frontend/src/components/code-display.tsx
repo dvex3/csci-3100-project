@@ -3,6 +3,7 @@
 import { useMemo } from "react"
 
 export type DetectedFunction = {
+  kind: "function" | "class"
   name: string
   lineStart: number
   lineEnd: number
@@ -20,108 +21,95 @@ export function CodeDisplay({
   selectedFunction,
   onFunctionClick,
 }: CodeDisplayProps) {
-  /**
-   * Parse the code to find all functions and their line ranges + full code
-   * For JS/TS, this uses a simple brace counter to extend from the line
-   * where the function is declared down to the matching closing brace.
-   * For Python/others, it just takes lines until indentation decreases or is blank.
-   */
-  const functions = useMemo(() => {
-    const functionList: DetectedFunction[] = []
+  const functions = useMemo<DetectedFunction[]>(() => {
+    const trimmed = code.trim()
+    if (!trimmed) return []
+
     const lines = code.split("\n")
 
-    const functionPatterns = [
-      /^\s*(async\s+)?function\s+(\w+)\s*\(/, // function foo(...)
-      /^\s*(export\s+)?(async\s+)?function\s+(\w+)/, // export function foo
-      /^\s*const\s+(\w+)\s*=\s*(async\s*)?\(/, // const foo = (...) =>
-      /^\s*let\s+(\w+)\s*=\s*(async\s*)?\(/,
-      /^\s*var\s+(\w+)\s*=\s*(async\s*)?\(/,
-      /^\s*def\s+(\w+)\s*\(/, // Python def foo(
-      /^\s*async\s+def\s+(\w+)\s*\(/,
-      /^\s*(public|private|protected)?\s+(static\s+)?(async\s+)?(\w+)\s+(\w+)\s*\(/, // Java method
-    ]
+    const getIndent = (s: string) => {
+      const expanded = s.replace(/\t/g, "    ")
+      const match = expanded.match(/^\s*/)
+      return match ? match[0].length : 0
+    }
 
-    const getIndent = (s: string) => s.match(/^\s*/)?.[0].length ?? 0
+    const isDefLine = (line: string) =>
+      /^\s*(async\s+)?def\s+\w+\s*\(/.test(line)
+
+    const getDefName = (line: string) => {
+      const m = /^\s*(async\s+)?def\s+(\w+)\s*\(/.exec(line)
+      return m ? m[2] : ""
+    }
+
+    const isClassLine = (line: string) =>
+      /^\s*class\s+\w+\s*(\(|:)/.test(line)
+
+    const getClassName = (line: string) => {
+      const m = /^\s*class\s+(\w+)\s*(\(|:)/.exec(line)
+      return m ? m[1] : ""
+    }
+
+    const result: DetectedFunction[] = []
 
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i]
 
-      for (const pattern of functionPatterns) {
-        const match = line.match(pattern)
-        if (!match) continue
+      let kind: "function" | "class" | null = null
+      let name = ""
 
-        let functionName = ""
+      if (isDefLine(line)) {
+        kind = "function"
+        name = getDefName(line) || "<anonymous>"
+      } else if (isClassLine(line)) {
+        kind = "class"
+        name = getClassName(line) || "<anonymous>"
+      } else {
+        continue
+      }
 
-        if (pattern.source.includes("def")) {
-          // Python: def foo( / async def foo(
-          functionName = match[1]
-        } else if (pattern.source.includes("public|private")) {
-          // Java: method name is group 5
-          functionName = match[5] || match[3]
-        } else {
-          // JS/TS: group 2 or 1
-          functionName = (match[2] as string) || (match[1] as string) || ""
+      const baseIndent = getIndent(line)
+      const lineStart = i + 1
+
+      let j = i + 1
+      let lastBodyLine = lineStart
+
+      while (j < lines.length) {
+        const l = lines[j]
+        if (l.trim() === "") {
+          lastBodyLine = j + 1
+          j++
+          continue
         }
-
-        if (!functionName) continue
-
-        // Avoid duplicates for same name
-        if (functionList.some((f) => f.name === functionName)) continue
-
-        let lineStart = i + 1
-        let lineEnd = lineStart
-
-        // Try to expand block for JS/TS/Java using braces
-        if (line.includes("{")) {
-          let braceCount = 0
-          for (let j = i; j < lines.length; j++) {
-            const l = lines[j]
-            for (const ch of l) {
-              if (ch === "{") braceCount++
-              if (ch === "}") braceCount--
-            }
-            if (braceCount === 0) {
-              lineEnd = j + 1
-              break
-            }
-          }
-        } else if (pattern.source.includes("def")) {
-          // Very simple Python heuristic: extend while indentation is greater
-          const baseIndent = getIndent(line)
-          let lastNonEmpty = i + 1
-          for (let j = i + 1; j < lines.length; j++) {
-            const l = lines[j]
-            if (l.trim() === "") {
-              lastNonEmpty = j + 1
-              continue
-            }
-            const indent = getIndent(l)
-            if (indent <= baseIndent) break
-            lastNonEmpty = j + 1
-          }
-          lineEnd = lastNonEmpty
+        const indent = getIndent(l)
+        if (indent > baseIndent) {
+          lastBodyLine = j + 1
+          j++
+          continue
         }
-
-        const fullCode = lines.slice(lineStart - 1, lineEnd).join("\n")
-
-        functionList.push({
-          name: functionName,
-          lineStart,
-          lineEnd,
-          fullCode,
-        })
-
-        // Stop checking other patterns for this line once matched
         break
       }
+
+      const lineEnd = lastBodyLine
+      const fullCode = lines.slice(lineStart - 1, lineEnd).join("\n")
+
+      if (
+        !result.some(
+          (f) =>
+            f.kind === kind &&
+            f.name === name &&
+            f.lineStart === lineStart &&
+            f.lineEnd === lineEnd,
+        )
+      ) {
+        result.push({ kind, name, lineStart, lineEnd, fullCode })
+      }
+      // keep scanning; inner defs/classes will be picked up when their line is reached
     }
 
-    return functionList
+    result.sort((a, b) => a.lineStart - b.lineStart)
+    return result
   }, [code])
 
-  /**
-   * Render code with preserved indentation and clickable function names
-   */
   const renderCode = useMemo(() => {
     const lines = code.split("\n")
 
@@ -137,7 +125,7 @@ export function CodeDisplay({
       let namePart: string | null = null
       let after = ""
 
-      if (functionOnLine) {
+      if (functionOnLine && functionOnLine.name !== "<anonymous>") {
         const name = functionOnLine.name
         const pos = line.indexOf(name)
         if (pos !== -1) {
@@ -153,10 +141,11 @@ export function CodeDisplay({
       return (
         <div
           key={index}
-          className={`py-1 px-4 transition-colors ${isSelectedLine
-            ? "bg-primary/20 border-l-2 border-primary"
-            : "hover:bg-muted/50"
-            }`}
+          className={`py-1 px-4 transition-colors ${
+            isSelectedLine
+              ? "bg-primary/20 border-l-2 border-primary"
+              : "hover:bg-muted/50"
+          }`}
           onClick={() => {
             if (functionOnLine) {
               onFunctionClick(functionOnLine)
@@ -195,7 +184,7 @@ export function CodeDisplay({
       {functions.length > 0 && (
         <div className="px-4 py-2 border-t border-border bg-muted/20">
           <p className="text-xs text-muted-foreground">
-            Found {functions.length} function(s) • Click to select
+            Found {functions.length} item(s) • Click to select
           </p>
         </div>
       )}

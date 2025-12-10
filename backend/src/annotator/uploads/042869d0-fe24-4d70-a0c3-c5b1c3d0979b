@@ -1,3 +1,7 @@
+class MyClass:
+    # Class attributes and methods go here
+    pass
+
 W_PIECES = ("P ", "R ", "N ", "B ", "Q ", "K ")
 B_PIECES = ("p ", "r ", "n ", "b ", "q ", "k ")
 
@@ -218,6 +222,20 @@ def move_piece(token, turn, board) -> bool:
     
 
     return True
+
+def outer_function(message):
+    """
+    This is the outer function that takes a message.
+    """
+    def inner_function():
+        """
+        This is the inner function, defined inside outer_function.
+        It can access variables from the enclosing scope (outer_function).
+        """
+        print(message)
+
+    # Call the inner function from within the outer function
+    inner_function()
 
 def main():
     board = init_board()

@@ -41,7 +41,7 @@ export function CodeUploader({ onCodeUpload, isLoading }: CodeUploaderProps) {
     const isAccepted = acceptedExtensions.some((ext) => file.name.toLowerCase().endsWith(ext))
 
     if (!isAccepted) {
-      alert("Please upload a code file (.py file)")
+      alert("Please upload a python source file (.py file)")
       return
     }
 
