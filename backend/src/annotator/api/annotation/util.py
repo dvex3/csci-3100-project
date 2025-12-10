@@ -12,9 +12,6 @@ model_name = "gpt-4.1"
 deployment = "gpt-4.1"
 subscription_key = os.getenv("AZURE_OPENAI_KEY")
 api_version = "2025-01-01-preview"
-client = AzureOpenAI(
-    api_version=api_version, azure_endpoint=endpoint, api_key=subscription_key
-)
 
 system_prompt = (
     "You are a code annotator. "
@@ -27,6 +24,12 @@ def get_user_prompt(function_name, parsed_map, code):
     return (
         f"Explain function: {function_name} in code map: {parsed_map} and code: {code}"
     )
+
+def get_client():
+    return AzureOpenAI(
+        api_version=api_version, azure_endpoint=endpoint, api_key=subscription_key
+    )
+
 
 
 def chat(function_name, parsed_map, code):
@@ -43,6 +46,8 @@ def chat(function_name, parsed_map, code):
             "content": user_prompt,
         },
     ]
+
+    client = get_client()
     response = client.chat.completions.create(
         messages=message,
         model=deployment,
