@@ -1,0 +1,150 @@
+import time
+import random
+import math
+from typing import List, Callable, Iterator, Tuple
+
+# Simulate visiting all 10,000 islands exactly once and returning to the starting point in the shortest possible time.
+
+
+# -------------------------------------------------------- Data structures
+class Island:
+    def __init__(self, location_x: float, location_y: float):
+        self._location_x = location_x
+        self._location_y = location_y
+
+    def get_location_x(self) -> float:
+        return self._location_x
+
+    def get_location_y(self) -> float:
+        return self._location_y
+
+
+# -------------------------------------------------------- Functions
+def generate_islands(
+    n: int,
+    x_range: Tuple[float, float],
+    y_range: Tuple[float, float],
+    seed: int,
+) -> List[Island]:
+    """
+    Generate `n` (n>1) Island objects with randomised coordinates inside the given ranges.
+    This returns a list of `Island` instances but does not perform any heavy
+    precomputation (no full distance matrix).
+    """
+    if seed is not None:
+        random.seed(seed)
+    return [
+        Island(random.uniform(*x_range), random.uniform(*y_range)) for _ in range(n)
+    ]
+
+
+def euclidean_distance(a: Island, b: Island) -> float:
+    """Return Euclidean distance between two Island instances."""
+    dx = a.get_location_x() - b.get_location_x()
+    dy = a.get_location_y() - b.get_location_y()
+    return math.hypot(dx, dy)
+
+
+def make_distance_func(islands: List[Island]) -> Callable[[int, int], float]:
+    """
+    Return a callable `dist(i, j)` that computes the distance between island indices
+    i and j on demand. This avoids storing an O(n^2) matrix in memory.
+    """
+
+    def dist(i: int, j: int) -> float:
+        return euclidean_distance(islands[i], islands[j])
+
+    return dist
+
+
+def pairwise_distance_generator(
+    islands: List[Island],
+) -> Iterator[Tuple[int, int, float]]:
+    """
+    Yield (i, j, distance) for every unordered pair with i < j.
+    Useful for streaming algorithms or building sparse representations.
+    """
+    n = len(islands)
+    for i in range(n):
+        a = islands[i]
+        for j in range(i + 1, n):
+            yield (i, j, euclidean_distance(a, islands[j]))
+
+
+def nearest_neighbor_tour(islands: List[Island], start: int) -> List[int]:
+    """
+    Construct a simple nearest-neighbour tour (greedy). This is O(n^2) time
+    but does not allocate an O(n^2) distance matrix; distances are computed on demand.
+    Returns a list of island indices representing the tour.
+    """
+    n = len(islands)
+    if n == 0:
+        return []
+    dist = make_distance_func(islands)
+    unvisited = set(range(n))
+    tour = [start]
+    unvisited.remove(start)
+    current = start
+    while unvisited:
+        next_city = min(unvisited, key=lambda j: dist(current, j))
+        tour.append(next_city)
+        unvisited.remove(next_city)
+        current = next_city
+    return tour
+
+
+def tour_length(tour: List[int], islands: List[Island]) -> float:
+    """Compute the total length of a closed tour given as a list of indices."""
+    if not tour:
+        return 0.0
+    dist = make_distance_func(islands)
+    total = 0.0
+    for i in range(len(tour)):
+        j = (i + 1) % len(tour)
+        total += dist(tour[i], tour[j])
+    return total
+
+
+def model_tsp(
+    island_count: int,
+    run_solver: bool,
+    seed: int,
+    x_range: Tuple[float, float],
+    y_range: Tuple[float, float],
+):
+    """
+    Create `island_count` Island objects and optionally run a nearest-neighbour solver.
+
+    Parameters:
+    - island_count: number of Island objects to create.
+    - run_solver: whether to run the nearest-neighbour solver.
+    - seed: RNG seed for reproducibility.
+    - x_range: range for x coordinates as (min, max).
+    - y_range: range for y coordinates as (min, max).
+
+    Returns:
+    - (islands, tour, length) where `tour` is a list of indices (empty if run_solver is False)
+      and `length` is the total tour length (0.0 if run_solver is False).
+    """
+    islands = generate_islands(island_count, x_range, y_range, seed)
+    tour = []
+    length = 0.0
+    if run_solver:
+        start_time = time.time()
+        tour = nearest_neighbor_tour(islands, 0)
+        length = tour_length(tour, islands)
+        elapsed = time.time() - start_time
+        print(f"Nearest-neighbour TSP on {island_count} islands took {elapsed:.2f} s")
+    return islands, tour, length
+
+
+# -------------------------------------------------------- Main
+if __name__ == "__main__":
+    # Create 10_000 islands quickly and run the solver.
+    islands, tour, length = model_tsp(10000, True, 42, (0.0, 1000.0), (0.0, 1000.0))
+
+    # Demonstration run on a smaller problem so that it completes quickly.
+    # islands, tour, length = model_tsp(200, True, 1, (0.0, 1000.0), (0.0, 1000.0))
+
+    print(f"Created {len(islands)} islands")
+    print(f"Tour length for {len(islands)} islands: {length:.2f}")
