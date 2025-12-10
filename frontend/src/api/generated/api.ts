@@ -1055,7 +1055,7 @@ export const FileApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async postUploadFile(name: string, file: File, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+        async postUploadFile(name: string, file: File, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FileInfoResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.postUploadFile(name, file, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['FileApi.postUploadFile']?.[localVarOperationServerIndex]?.url;
@@ -1108,7 +1108,7 @@ export const FileApiFactory = function (configuration?: Configuration, basePath?
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        postUploadFile(name: string, file: File, options?: RawAxiosRequestConfig): AxiosPromise<void> {
+        postUploadFile(name: string, file: File, options?: RawAxiosRequestConfig): AxiosPromise<FileInfoResponse> {
             return localVarFp.postUploadFile(name, file, options).then((request) => request(axios, basePath));
         },
     };

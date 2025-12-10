@@ -164,7 +164,7 @@ This endpoint does not have any parameters.
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **postUploadFile**
-> postUploadFile()
+> FileInfoResponse postUploadFile()
 
 
 ### Example
@@ -197,7 +197,7 @@ const { status, data } = await apiInstance.postUploadFile(
 
 ### Return type
 
-void (empty response body)
+**FileInfoResponse**
 
 ### Authorization
 
@@ -206,7 +206,7 @@ void (empty response body)
 ### HTTP request headers
 
  - **Content-Type**: multipart/form-data
- - **Accept**: Not defined
+ - **Accept**: application/json
 
 
 ### HTTP response details
@@ -216,6 +216,7 @@ void (empty response body)
 |**400** | Validation error. |  -  |
 |**401** | Token is invalid or expired. |  -  |
 |**201** | File was successfully created. |  -  |
+|**200** | Success |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
