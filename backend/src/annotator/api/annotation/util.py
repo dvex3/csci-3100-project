@@ -23,12 +23,16 @@ system_prompt = (
 )
 
 
-def get_user_prompt(function_name, parsed_map):
-    return f"Explain function: {function_name} in code map: {parsed_map} "
+def get_user_prompt(function_name, parsed_map, code):
+    return (
+        f"Explain function: {function_name} in code map: {parsed_map} and code: {code}"
+    )
 
 
-def chat(function_name, parsed_map):
-    user_prompt = get_user_prompt(function_name, parsed_map)
+def chat(function_name, parsed_map, code):
+    print(function_name, parsed_map, code)
+    # todo: improve message prompts
+    user_prompt = get_user_prompt(function_name, parsed_map, code)
     message = [
         {
             "role": "system",
