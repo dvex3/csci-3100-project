@@ -12,7 +12,7 @@ def test_config_development():
     assert not app.config["TESTING"]
     assert app.config["SQLALCHEMY_DATABASE_URI"] == os.getenv("DATABASE_URL", SQLITE_DEV)
     assert app.config["TOKEN_EXPIRE_HOURS"] == 0
-    assert app.config["TOKEN_EXPIRE_MINUTES"] == 15
+    assert app.config["TOKEN_EXPIRE_MINUTES"] == 59
 
 
 def test_config_testing():
