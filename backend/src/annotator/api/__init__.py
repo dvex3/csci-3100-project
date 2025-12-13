@@ -1,0 +1,24 @@
+"""API blueprint configuration."""
+
+from flask import Blueprint
+from flask_restx import Api
+
+from annotator.api.auth.endpoints import auth_ns
+from annotator.api.file.endpoints import file_ns
+from annotator.api.annotation.endpoints import annotation_ns
+
+api_bp = Blueprint("api", __name__, url_prefix="/api/v1")
+authorizations = {"Bearer": {"type": "apiKey", "in": "header", "name": "Authorization"}}
+
+api = Api(
+    api_bp,
+    version="1.0",
+    title="Flask API with JWT-Based Authentication",
+    description="Welcome to the Swagger UI documentation site!",
+    doc="/ui",
+    authorizations=authorizations,
+)
+
+api.add_namespace(auth_ns)
+api.add_namespace(file_ns)
+api.add_namespace(annotation_ns)
