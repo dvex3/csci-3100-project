@@ -27,6 +27,7 @@ class Annotation(db.Model):
     owner_id = db.Column(
         db.String(36), db.ForeignKey("site_user.public_id"), nullable=False
     )
+    file = db.relationship("File", backref="annotations")
 
     def __repr__(self):
         return f"<annotation = {self.annotation}, file_id={self.file_id}, owner_id={self.owner_id}, uuid={self.uuid}>"

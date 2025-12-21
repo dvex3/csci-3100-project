@@ -33,8 +33,6 @@ def process_file_upload(name: str, file: FileStorage):
         code = f.read()
 
     parsed_map_dict = parse_python_file(code)
-    if parsed_map_dict is None:
-        abort(HTTPStatus.BAD_REQUEST, "File contains invalid syntax.")
     parsed_map_json = json.dumps(parsed_map_dict)
 
     new_file_info = File(

@@ -1,5 +1,7 @@
 ## Installation
+
 ### Create venv
+
 ```
 python -m venv .venv
 source venv/bin/activate # Linux
@@ -7,21 +9,26 @@ source venv/bin/activate # Linux
 ```
 
 ### Install dependencies
+
 ```
 pip install --upgrade pip setuptools wheel
 pip install -e .[dev]
 ```
 
-___
+---
 
 ## Usage
+
 ### Run server
+
 ```
 flask run --debug
 ```
+
 API documentation available at `/api/v1/ui`
 
 ### Database migration
+
 ```
 flask db init # only when migration folder doesn't exist
 flask db migrate --message "<change message>"
@@ -29,6 +36,7 @@ flask db upgrade
 ```
 
 ### Dev tools
+
 ```
 black <file/folder> # formats code
 flake8 <file/folder> # linting warnings

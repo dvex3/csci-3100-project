@@ -1016,7 +1016,7 @@ export const FileApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async deleteFileAction(fileUuid: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+        async deleteFileAction(fileUuid: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FileInfoResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.deleteFileAction(fileUuid, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['FileApi.deleteFileAction']?.[localVarOperationServerIndex]?.url;
@@ -1078,7 +1078,7 @@ export const FileApiFactory = function (configuration?: Configuration, basePath?
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        deleteFileAction(fileUuid: string, options?: RawAxiosRequestConfig): AxiosPromise<void> {
+        deleteFileAction(fileUuid: string, options?: RawAxiosRequestConfig): AxiosPromise<FileInfoResponse> {
             return localVarFp.deleteFileAction(fileUuid, options).then((request) => request(axios, basePath));
         },
         /**

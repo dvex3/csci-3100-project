@@ -10,7 +10,6 @@ Name | Type | Description | Notes
 **file_name** | **string** |  | [optional] [default to undefined]
 **created_at** | **string** |  | [optional] [default to undefined]
 **owner_id** | **string** |  | [optional] [default to undefined]
-**parsed_map** | **string** |  | [optional] [default to undefined]
 
 ## Example
 
@@ -23,7 +22,6 @@ const instance: FileInfoResponse = {
     file_name,
     created_at,
     owner_id,
-    parsed_map,
 };
 ```
 
