@@ -1,9 +1,9 @@
 "use client"
 
-import {AuthApi, AuthResponse, UserResponse} from "@/src/api/generated";
-import React, {createContext, useContext, useEffect, useState} from "react";
-import {useRouter} from "next/navigation";
-import {apiConfig, loginApiConfig} from "@/src/utils/api-config";
+import { AuthApi, AuthResponse, UserResponse } from "@/src/api/generated";
+import React, { createContext, useContext, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { apiConfig, loginApiConfig } from "@/src/utils/api-config";
 
 type AuthContextType = {
     user: UserResponse | null,
@@ -14,7 +14,7 @@ type AuthContextType = {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export function AuthProvider({children}: { children: React.ReactNode }) {
+export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [user, setUser] = useState<UserResponse | null>(null)
 
     const router = useRouter()
@@ -75,7 +75,7 @@ export function AuthProvider({children}: { children: React.ReactNode }) {
         }
     }
 
-    return <AuthContext.Provider value={{user, register, login, logout}}>
+    return <AuthContext.Provider value={{ user, register, login, logout }}>
         {children}
     </AuthContext.Provider>
 }

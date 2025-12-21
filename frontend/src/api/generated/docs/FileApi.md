@@ -4,8 +4,8 @@ All URIs are relative to */api/v1*
 
 |Method | HTTP request | Description|
 |------------- | ------------- | -------------|
-|[**deleteFileAction**](#deletefileaction) | **DELETE** /file/{file_uuid} | Delete a file|
-|[**getFileAction**](#getfileaction) | **GET** /file/{file_uuid} | Retrieve content of a file|
+|[**deleteFileAction**](#deletefileaction) | **DELETE** /file/{uuid} | Delete a file|
+|[**getFileAction**](#getfileaction) | **GET** /file/{uuid} | Retrieve content of a file|
 |[**getUploadFile**](#getuploadfile) | **GET** /file/upload | Retrieve info of all files from a user|
 |[**postUploadFile**](#postuploadfile) | **POST** /file/upload | Upload a file to the server|
 
@@ -24,10 +24,10 @@ import {
 const configuration = new Configuration();
 const apiInstance = new FileApi(configuration);
 
-let fileUuid: string; //File UUID. (default to undefined)
+let uuid: string; //File UUID. (default to undefined)
 
 const { status, data } = await apiInstance.deleteFileAction(
-    fileUuid
+    uuid
 );
 ```
 
@@ -35,7 +35,7 @@ const { status, data } = await apiInstance.deleteFileAction(
 
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
-| **fileUuid** | [**string**] | File UUID. | defaults to undefined|
+| **uuid** | [**string**] | File UUID. | defaults to undefined|
 
 
 ### Return type
@@ -78,10 +78,10 @@ import {
 const configuration = new Configuration();
 const apiInstance = new FileApi(configuration);
 
-let fileUuid: string; //File UUID. (default to undefined)
+let uuid: string; //File UUID. (default to undefined)
 
 const { status, data } = await apiInstance.getFileAction(
-    fileUuid
+    uuid
 );
 ```
 
@@ -89,7 +89,7 @@ const { status, data } = await apiInstance.getFileAction(
 
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
-| **fileUuid** | [**string**] | File UUID. | defaults to undefined|
+| **uuid** | [**string**] | File UUID. | defaults to undefined|
 
 
 ### Return type

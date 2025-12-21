@@ -41,7 +41,7 @@ export function CodeUploader({ onCodeUpload, isLoading }: CodeUploaderProps) {
     const isAccepted = acceptedExtensions.some((ext) => file.name.toLowerCase().endsWith(ext))
 
     if (!isAccepted) {
-      alert("Please upload a code file (.py file)")
+      alert("Please upload a python source file (.py file)")
       return
     }
 
@@ -99,33 +99,33 @@ export function CodeUploader({ onCodeUpload, isLoading }: CodeUploaderProps) {
   }
 
   return (
-      <Card
-          onDragOver={handleDragOver}
-          onDragLeave={handleDragLeave}
-          onDrop={handleDrop}
-          className={`p-12 text-center border-2 border-dashed cursor-pointer transition-colors ${isDragging ? "border-primary bg-primary/10" : "border-border hover:border-primary"
-          }`}
-      >
-        <div className="flex flex-col items-center gap-4">
-          <Upload className="w-12 h-12 text-muted-foreground" />
-          <div>
-            <p className="text-lg font-semibold text-foreground mb-2">Upload Code File</p>
-            <p className="text-sm text-muted-foreground mb-4">Drag and drop your code file here, or click to select</p>
-            <p className="text-xs text-muted-foreground">
-              Only .py accptable now
-            </p>
-          </div>
-          <Button onClick={handleClick} disabled={isLoading} className="mt-4">
-            {isLoading ? "Processing..." : "Select File"}
-          </Button>
+    <Card
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
+      onDrop={handleDrop}
+      className={`p-12 text-center border-2 border-dashed cursor-pointer transition-colors ${isDragging ? "border-primary bg-primary/10" : "border-border hover:border-primary"
+        }`}
+    >
+      <div className="flex flex-col items-center gap-4">
+        <Upload className="w-12 h-12 text-muted-foreground" />
+        <div>
+          <p className="text-lg font-semibold text-foreground mb-2">Upload Code File</p>
+          <p className="text-sm text-muted-foreground mb-4">Drag and drop your code file here, or click to select</p>
+          <p className="text-xs text-muted-foreground">
+            Only .py accptable now
+          </p>
         </div>
-        <input
-            ref={fileInputRef}
-            type="file"
-            onChange={handleFileInput}
-            className="hidden"
-            accept=".js,.jsx,.ts,.tsx,.py,.java,.cpp,.c,.go,.rb,.php,.swift,.kt,.rs,.txt"
-        />
-      </Card>
+        <Button onClick={handleClick} disabled={isLoading} className="mt-4">
+          {isLoading ? "Processing..." : "Select File"}
+        </Button>
+      </div>
+      <input
+        ref={fileInputRef}
+        type="file"
+        onChange={handleFileInput}
+        className="hidden"
+        accept=".js,.jsx,.ts,.tsx,.py,.java,.cpp,.c,.go,.rb,.php,.swift,.kt,.rs,.txt"
+      />
+    </Card>
   )
 }

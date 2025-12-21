@@ -1,0 +1,251 @@
+class MyClass:
+    # Class attributes and methods go here
+    pass
+
+W_PIECES = ("P ", "R ", "N ", "B ", "Q ", "K ")
+B_PIECES = ("p ", "r ", "n ", "b ", "q ", "k ")
+
+def print_board(board):
+    print("    a  b  c  d  e  f  g  h")
+    print("  +------------------------+")
+    for i in range(8):
+        line = str(8 - i)
+        line += " | "
+        for j in range(8):
+            line += board[8 - i - 1][j]
+            if j != 7:
+                line += " "
+        line += "|"
+        print(line)
+    print("  +------------------------+")
+    print("    a  b  c  d  e  f  g  h")
+
+
+def init_board():
+    board = [[".." for i in range(8)] for j in range(8)]
+    board[0][0] = "R "  
+    board[0][1] = "N "
+    board[0][2] = "B "
+    board[0][3] = "Q "
+    board[0][4] = "K "
+    board[0][5] = "B "
+    board[0][6] = "N "
+    board[0][7] = "R "
+    board[7][0] = "r "  
+    board[7][1] = "n "
+    board[7][2] = "b "
+    board[7][3] = "q "
+    board[7][4] = "k "
+    board[7][5] = "b "
+    board[7][6] = "n "
+    board[7][7] = "r "
+    for i in range(8):
+        board[1][i] = "P "
+        board[6][i] = "p "
+    return board
+
+
+def own_piece(board, turn, coord) -> bool:
+    if turn and board[coord[0]][coord[1]] in W_PIECES:
+        return True
+    if not turn and board[coord[0]][coord[1]] in B_PIECES:
+        return True
+    return False
+
+
+def diagonal_blocked(board, coord1, coord2) -> bool:
+    # -1 = left, 1 = right
+    x_dir = -1 if coord1[1] > coord2[1] else 1
+    # -1 = down, 1 = up
+    y_dir = -1 if coord1[0] > coord2[0] else 1
+    current_coord = [coord1[0] + y_dir, coord1[1] + x_dir]
+    for i in range(abs(coord1[0] - coord2[0]) - 1):
+        if board[current_coord[0]][current_coord[1]] != "..":
+            return True
+        current_coord[0] += y_dir
+        current_coord[1] += x_dir
+    return False
+
+
+def horizontal_blocked(board, coord1, coord2) -> bool:
+    x_dir = -1 if coord1[1] > coord2[1] else 1
+    current_coord = [coord1[0], coord1[1] + x_dir]
+    for i in range(abs(coord1[1] - coord2[1]) - 1):
+        if board[current_coord[0]][current_coord[1]] != "..":
+            return True
+        current_coord[1] += x_dir
+    return False
+
+
+def vertical_blocked(board, coord1, coord2) -> bool:
+    y_dir = -1 if coord1[0] > coord2[0] else 1
+    current_coord = [coord1[0] + y_dir, coord1[1]]
+    for i in range(abs(coord1[0] - coord2[0]) - 1):
+        if board[current_coord[0]][current_coord[1]] != "..":
+            return True
+        current_coord[0] += y_dir
+    return False
+
+
+def legal_move(coord1, coord2, piece, board) -> bool:
+    # check out of bounds
+    if coord1[0] < 0 or coord1[0] > 7 or coord1[1] < 0 or coord1[1] > 7 or coord2[0] < 0 or coord2[0] > 7 or coord2[1] < 0 or coord2[1] > 7:
+        return False
+
+    # check correct piece
+    if turn and board[coord1[0]][coord1[1]] != piece:
+        return False
+    if not turn and board[coord1[0]][coord1[1]] != piece.lower():
+        return False
+
+    # check no movement
+    if coord1 == coord2:
+        return False
+
+    # check correct movement
+    # pawn
+    if piece = "P ":
+        # white
+        if turn:
+            if coord1[0] == 1 and (coord2 == (2, coord1[1]) or coord2 == (3, coord1[1])):
+                if own_piece(board, 1, coord2) and own_piece(board, 0, coord2):
+                    return False
+            elif coord2 == (coord1[0] + 1, coord1[1]):
+                if own_piece(board, 1, coord2) and own_piece(board, 0, coord2):
+                    return False
+            elif coord2 == (coord1[0] + 1, coord1[1] + 1) or coord2 == (coord1[0] + 1, coord1[1] + 1):
+                if board[coord2[0]][coord2[1]] == "..":
+                    return False
+                if own_piece(board, turn, coord2):
+                    return False
+            else:
+                return False
+        # black
+        else:
+            if coord1[0] == 6 and (coord2 == (5, coord1[1]) or coord2 == (4, coord1[1])):
+                if own_piece(board, 1, coord2) and own_piece(board, 0, coord2):
+                    return False
+            elif coord2 == (coord1[0] - 1, coord1[1]):
+                if own_piece(board, 1, coord2) and own_piece(board, 0, coord2):
+                    return False
+            elif coord2 == (coord1[0] - 1, coord1[1] + 1) or coord2 == (coord1[0] - 1, coord1[1] + 1):
+                if board[coord2[0]][coord2[1]] == "..":
+                    return False
+                if own_piece(board, turn, coord2):
+                    return False
+            else:
+                return False
+    
+    # knight
+    elif piece = "N ":
+        moves = [(coord1[0] + 2, coord1[1] + 1), (coord1[0] + 2, coord1[1] - 1),
+            (coord1[0] - 2, coord1[1] + 1), (coord1[0] - 2, coord1[1] - 1),
+            (coord1[0] + 1, coord1[1] + 2), (coord1[0] - 1, coord1[1] + 2),
+            (coord1[0] + 1, coord1[1] - 2), (coord1[0] - 1, coord1[1] - 2)
+        ]
+        if coord2 not in moves:
+            return False
+        if own_piece(board, turn, coord2):
+            return False
+    
+    # bishop
+    elif piece = "B ":
+        y_diff = coord1[0] - coord2[0]
+        x_diff = coord1[1] - coord2[1]
+        if x_diff != y_diff:
+            return False
+        if diagonal_blocked(board, coord1, coord2):
+            return False
+        if own_piece(board, turn, coord2):
+            return False
+    
+    # rook:
+    elif piece = "R ":
+        y_diff = coord1[0] - coord2[0]
+        x_diff = coord1[1] - coord2[1]
+        if y_diff != 0 and x_diff != 0:
+            return False
+        if y_diff == 0 and horizontal_blocked(board, coord1, coord2):
+            return False
+        if x_diff == 0 and vertical_blocked(board, coord1, coord2):
+            return False
+        if own_piece(board, turn, coord2):
+            return False
+    
+    # queen:
+    elif piece = "Q ":
+        y_diff = coord1[0] - coord2[0]
+        x_diff = coord1[1] - coord2[1]
+        if y_diff != 0 and x_diff != 0 and x_diff != y_diff:
+            return False
+        if x_diff == y_diff and diagonal_blocked(board, coord1, coord2):
+            return False
+        if y_diff == 0 and horizontal_blocked(board, coord1, coord2):
+            return False
+        if x_diff == 0 and vertical_blocked(board, coord1, coord2):
+            return False
+        if own_piece(board, turn, coord2):
+            return False
+    
+    # king
+    elif piece = "K ":
+        y_diff = coord1[0] - coord2[0]
+        x_diff = coord1[1] - coord2[1]
+        if abs(y_diff) > 1 or abs(x_diff) > 1:
+            return False
+        if own_piece(board, turn, coord2):
+            return False
+
+    return True
+
+
+def move_piece(token, turn, board) -> bool:
+    # syntax check
+    if len(token) != 11:
+        return False
+    side = "W" if turn else "B"
+    if token[0] != side or token[1] != "-" or token[3] != "{" or token[6:8] != "->" or token[10] != "}":
+        return False
+    piece = token[2] + " "
+    if piece not in W_PIECES:
+        return False
+
+    # coord = (y, x)
+    coord1 = (int(token[5]) - 1, ord(token[4]) - ord("a"))
+    coord2 = (int(token[9]) - 1, ord(token[8]) - ord("a"))
+    if not legal_move(coord1, coord2, piece, board):
+        return False
+
+    board[coord2[0]][coord2[1]] = board[coord1[0]][coord1[1]]
+    board[coord1[0]][coord1[1]] = ".."
+
+    
+
+    return True
+
+def outer_function(message):
+    """
+    This is the outer function that takes a message.
+    """
+    def inner_function():
+        """
+        This is the inner function, defined inside outer_function.
+        It can access variables from the enclosing scope (outer_function).
+        """
+        print(message)
+
+    # Call the inner function from within the outer function
+    inner_function()
+
+def main():
+    board = init_board()
+    turn = 1 # 0 for black, 1 for white
+    move_input = input()
+    move_tokens = move_input.split()
+    for token in move_tokens:
+        if not move_piece(token, turn, board):
+            print("error " + token)
+            break
+        turn = not turn
+
+main()
