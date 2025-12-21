@@ -35,3 +35,11 @@ def user(db):
     db.session.add(user)
     db.session.commit()
     return user
+
+
+@pytest.fixture
+def user_file(db):
+    user = User(email=EMAIL, password=PASSWORD)
+    db.session.add(user)
+    db.session.commit()
+    return user
