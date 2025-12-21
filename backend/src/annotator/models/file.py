@@ -26,7 +26,9 @@ class File(db.Model):
     owner_id = db.Column(
         db.String(36), db.ForeignKey("site_user.public_id"), nullable=False
     )
-    owner = db.relationship("User", backref="files")
+    annotations = db.relationship(
+        "Annotation", backref="file", cascade="all, delete-orphan, delete"
+    )
     parsed_map = db.Column(db.String, nullable=False)
 
     def __repr__(self):

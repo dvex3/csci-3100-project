@@ -33,6 +33,8 @@ def process_file_upload(name: str, file: FileStorage):
         code = f.read()
 
     parsed_map_dict = parse_python_file(code)
+    if parsed_map_dict is None:
+        abort(HTTPStatus.BAD_REQUEST, "Uploaded file contains syntax error.")
     parsed_map_json = json.dumps(parsed_map_dict)
 
     new_file_info = File(
@@ -40,7 +42,6 @@ def process_file_upload(name: str, file: FileStorage):
         item_name=item_name,
         file_name=file_name,
         owner_id=owner_id,
-        owner=owner,
         parsed_map=parsed_map_json,
     )
     db.session.add(new_file_info)
@@ -51,7 +52,6 @@ def process_file_upload(name: str, file: FileStorage):
         created_at=localized_dt_string(file_info.created_at),
         item_name=item_name,
         file_name=file_name,
-        owner_id=owner_id,
         parsed_map=parsed_map_json,
     )
 

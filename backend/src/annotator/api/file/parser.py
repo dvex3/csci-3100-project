@@ -7,6 +7,7 @@ import ast
 # Helper functions
 # ----------------------------
 
+
 def extract_imports(tree: ast.AST):
     """Collect top-level import and import-from names."""
     imports = []
@@ -79,7 +80,8 @@ def is_recursive(func_name: str, calls: list):
 # Main parser
 # ----------------------------
 
-def parse_python_file(code: str) -> dict:
+
+def parse_python_file(code: str) -> dict | None:
     """
     Fully implemented trimmed parsed_map generator.
     Safe, deterministic, LLM-friendly.
@@ -88,11 +90,7 @@ def parse_python_file(code: str) -> dict:
     try:
         tree = ast.parse(code)
     except SyntaxError:
-        return {
-            "file": {"path": None, "imports": [], "globals": []},
-            "functions": [],
-            "call_graph": {}
-        }
+        return None
 
     imports = extract_imports(tree)
     globals_list = extract_globals(tree)
@@ -114,13 +112,15 @@ def parse_python_file(code: str) -> dict:
             entry = {
                 "name": func_name,
                 "start_line": node.lineno,
-                "end_line": node.end_lineno if hasattr(node, "end_lineno") else node.lineno,
+                "end_line": (
+                    node.end_lineno if hasattr(node, "end_lineno") else node.lineno
+                ),
                 "params": params,
                 "returns": returns,
                 "calls": calls,
                 "called_by": [],  # fill in second pass
                 "control_flow": control_flow,
-                "recursion": recursion
+                "recursion": recursion,
             }
             function_entries.append(entry)
 
