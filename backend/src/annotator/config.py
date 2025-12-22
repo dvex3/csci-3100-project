@@ -32,6 +32,7 @@ class TestingConfig(Config):
 
     TESTING = True
     SQLALCHEMY_DATABASE_URI = SQLITE_TEST
+    UPLOAD_FOLDER = os.path.join(HERE, "test_uploads")
 
 
 class DevelopmentConfig(Config):

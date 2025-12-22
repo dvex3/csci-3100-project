@@ -1,7 +1,11 @@
 """Global pytest fixtures."""
 
-import pytest
+import shutil
 
+import pytest
+import os
+
+import annotator
 from annotator import create_app
 from annotator import db as database
 from annotator.models.liscense_key import LicenseKey
@@ -38,8 +42,14 @@ def user(db):
 
 
 @pytest.fixture
-def user_file(db):
-    user = User(email=EMAIL, password=PASSWORD)
-    db.session.add(user)
-    db.session.commit()
-    return user
+def upload_folder(app):
+    folder = app.config["UPLOAD_FOLDER"]
+    for filename in os.listdir(folder):
+        file_path = os.path.join(folder, filename)
+        try:
+            if os.path.isfile(file_path) or os.path.islink(file_path):
+                os.unlink(file_path)
+            elif os.path.isdir(file_path):
+                shutil.rmtree(file_path)
+        except Exception as e:
+            print("Failed to delete %s. Reason: %s" % (file_path, e))
