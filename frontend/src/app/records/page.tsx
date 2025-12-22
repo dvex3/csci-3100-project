@@ -45,7 +45,7 @@ export default function RecordsPage() {
       const blob = new Blob([code], { type: "text/plain" })
       const file = new File([blob], "uploaded_code.py")
 
-      const uploadRes = await new FileApi(apiConfig()).postUploadFile("file", file)
+      const uploadRes = await new FileApi(apiConfig()).postUploadFile(file.name, file)
       const newFile = uploadRes.data
       const uuid = newFile.uuid ?? ""
 

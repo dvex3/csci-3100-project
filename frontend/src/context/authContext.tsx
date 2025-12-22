@@ -42,6 +42,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             return response.data
         } catch (error) {
             console.log(error)
+            alert(error.message)
             throw error
         }
     }
@@ -57,6 +58,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             return response.data
         } catch (error) {
             console.log(error)
+            alert(error.message)
             throw error
         }
     }
