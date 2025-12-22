@@ -61,7 +61,10 @@ export default function RecordsPage() {
       router.push(`/main?file_uuid=${encodeURIComponent(uuid)}`)
     } catch (err) {
       console.error("Error uploading code from records page:", err)
-      alert("Error uploading code. Please try again.")
+      if (err.status === 400)
+        alert("File contains syntax errors.")
+      else
+        alert("Error uploading code. Please try again.")
     } finally {
       setIsUploading(false)
     }
