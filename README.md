@@ -1,6 +1,6 @@
 <img width="896" height="502" alt="image" src="https://github.com/user-attachments/assets/3c2cf3fe-160b-465d-88dd-57c8f0259cfb" />Installation Instruction
 
-2.1 Azure OpenAI API
+## Azure OpenAI API
 
 To obtain the Azure OpenAI key and endpoint:
 
@@ -20,7 +20,7 @@ AZURE_OPENAI_KEY="insert_your_key_here"
 
 AZURE_OPENAI_ENDPOINT="insert_your_endpoint_here"
 
-2.2 Frontend 
+## Frontend 
 
 Use any package manager to download the package(e.g. npm/pnpm)
 
@@ -28,7 +28,7 @@ Run the frontend (e.g. npm run dev)
 
 Web page available at https://localhost:3000
 
-2.3 Backend
+## Backend
 
 Create and activate virtual environment
 
