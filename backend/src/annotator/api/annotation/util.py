@@ -34,8 +34,9 @@ Output: a unified, concise explanation of the function's behavior and role.
 """.strip()
 
 
-def get_user_prompt(function_name, parsed_map):
-    return f"Explain function: {function_name} in code map: {parsed_map} "
+def get_user_prompt(function_name, parsed_map, function_code):
+    return f"""Explain function: {function_name} in code map: {parsed_map} and function code: {function_code}"""
+
 
 def get_client():
     return AzureOpenAI(
@@ -43,9 +44,8 @@ def get_client():
     )
 
 
-
-def chat(function_name, parsed_map):
-    user_prompt = get_user_prompt(function_name, parsed_map)
+def chat(function_name, parsed_map, function_code):
+    user_prompt = get_user_prompt(function_name, parsed_map, function_code)
     message = [
         {
             "role": "system",

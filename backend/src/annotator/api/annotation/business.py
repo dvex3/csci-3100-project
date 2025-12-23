@@ -1,5 +1,6 @@
 """Business logic for /annotation API endpoints."""
 
+import json
 import os
 from uuid import uuid4
 
@@ -43,7 +44,22 @@ def get_owner_id(file_uuid):
 def annotate(file_uuid, function_name="hello_world"):
     owner_id = get_owner_id(file_uuid)
     parsed_map = get_parsed_map(file_uuid)
-    annotation = chat(function_name, parsed_map)
+    json_parsed_map = json.loads(parsed_map)
+    start_line = 0
+    end_line = 0
+    for function in json_parsed_map["functions"]:
+        if function["name"] == function_name:
+            start_line = function["start_line"]
+            end_line = function["end_line"]
+    function_code = ""
+    f = open(os.path.join(current_app.config["UPLOAD_FOLDER"], file_uuid))
+    for line_no, line in enumerate(f):
+        if line_no >= start_line - 1:
+            function_code += line
+        if line_no >= end_line - 1:
+            break
+    f.close()
+    annotation = chat(function_name, parsed_map, function_code)
     uuid = str(uuid4())
     new_annotation = Annotation(
         uuid=uuid,
