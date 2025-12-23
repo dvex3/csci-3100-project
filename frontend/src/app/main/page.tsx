@@ -165,7 +165,6 @@ export default function Home() {
                       console.warn("No currentuuid yet, cannot get annotation")
                       return
                     }
-
                     // 1) If already have annotation in local state, do nothing
                     if (annotations && annotations[fn.name]) {
                       console.log("Using cached annotation for", fn.name)
@@ -181,7 +180,6 @@ export default function Home() {
                           currentuuid,
                         )
                       const info = annRes.data.info
-
                       if (info && info.length > 0) {
                         const map: Record<string, string> = {}
                         for (const item of info) {
@@ -191,8 +189,7 @@ export default function Home() {
                           map[name] = text
                         }
                         setAnnotations(map)
-
-                        if (map[fn.fullCode]) {
+                        if (map[fn.name]) {
                           console.log(
                             "Loaded existing annotation for",
                             fn.name,
@@ -209,7 +206,7 @@ export default function Home() {
                       )
                       const postRes =
                         await new AnnotationApi(apiConfig()).postAnnotate(
-                          fn.fullCode,
+                          fn.name,
                           currentuuid,
                         )
                       console.log("postAnnotate result:", postRes.data)
