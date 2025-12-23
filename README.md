@@ -1,6 +1,6 @@
-Installation Instruction
+<img width="896" height="502" alt="image" src="https://github.com/user-attachments/assets/3c2cf3fe-160b-465d-88dd-57c8f0259cfb" />Installation Instruction
 
-2.1 Azure OpenAI API
+## Azure OpenAI API
 
 To obtain the Azure OpenAI key and endpoint:
 
@@ -20,7 +20,7 @@ AZURE_OPENAI_KEY="insert_your_key_here"
 
 AZURE_OPENAI_ENDPOINT="insert_your_endpoint_here"
 
-2.2 Frontend 
+## Frontend 
 
 Use any package manager to download the package(e.g. npm/pnpm)
 
@@ -28,7 +28,7 @@ Run the frontend (e.g. npm run dev)
 
 Web page available at https://localhost:3000
 
-2.3 Backend
+## Backend
 
 Create and activate virtual environment
 
@@ -38,3 +38,6 @@ Run server
 
 Api documentation available at ‘/api/v1/ui’
 
+This project makes use of OpenAI’s large language models to assist with generating code annotations. Specifically, the annotator component sends selected code snippets to the OpenAI API and receives suggested explanations or comments, which are then displayed to the user. The AI is used only to generate natural-language annotations and layout in frontend.
+All system design, API integration, backend logic, and error handling were implemented by members of Group 12. The AI’s role is limited to producing explanatory text based on inputs provided by the user.
+We (the members of Group 12) also used AI tools (e.g., ChatGPT) during development to clarify technical concepts, debug issues, and refine documentation. All submitted code and architectural decisions, however, were authored and verified by us.
